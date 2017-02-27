@@ -1,0 +1,74 @@
+{
+  "eLinkBuilds": [
+    {
+      "version": "4.4.0",
+      "parameters": [
+        {
+          "name": "Change log file location",
+          "requestKey": "logPath",
+          "type": "properties",
+          "key": "eLink.log.location",
+          "fileName": "log4j.properties",
+          "location": "eLink-CE/src/main/resources/"
+        },
+        {
+          "name": "Comment H2 web server",
+          "requestKey": "h2WebServer",
+          "type": "xml",
+          "key": "beans.bean.h2WebServer",
+          "fileName": "eLink-mp-context.xml",
+          "location": "eLink-marketplace/src/main/resources"
+        }
+      ],
+      "modules": [
+        {
+          "name": "eLink-parent",
+          "version": "4.0.0",
+          "repository": "eLink-parent",
+          "branch": "release/4.4.0"
+        },
+        {
+          "name": "eLink-core",
+          "version": "4.4.1",
+          "repository": "eLink-core",
+          "branch": "release/4.4.0"
+        }
+      ]
+    },
+    {
+      "version": "6.0.0",
+      "parameters": [
+        {
+          "name": "Change log file location",
+          "requestKey": "logPath",
+          "type": "properties",
+          "key": "eLink.log.location",
+          "fileName": "log4j.properties",
+          "location": "eLink-CE/src/main/resources/"
+        },
+        {
+          "name": "Comment H2 web server",
+          "requestKey": "h2WebServer",
+          "type": "xml",
+          "key": "beans.bean.h2WebServer",
+          "fileName": "eLink-mp-context.xml",
+          "location": "eLink-marketplace/src/main/resources"
+        }
+      ],
+      "modules": [
+        {
+          "name": "eLink-parent",
+          "version": "6.0.0",
+          "repository": "eLink-parent",
+          "branch": "dev/4.4.0/config-mgmt"
+        },
+        {
+          "name": "eLink-core",
+          "version": "6.0.0-BETA1",
+          "repository": "eLink-core",
+          "branch": "dev/4.4.0/config-mgmt"
+        }
+      ]
+    }
+  ]
+}
