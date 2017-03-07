@@ -1,14 +1,14 @@
 {
   "eLinkBuilds": [
     {
-      "version": "4.4.0",
+      "version": "eLink-CE:5.0.0",
       "parameters": [
         {
           "name": "Change log file location",
           "requestKey": "logPath",
-          "type": "properties",
+          "type": "xml",
           "key": "eLink.log.location",
-          "fileName": "log4j.properties",
+          "fileName": "log4j2.xml",
           "location": "eLink-CE/src/main/resources/"
         },
         {
@@ -23,15 +23,21 @@
       "modules": [
         {
           "name": "eLink-parent",
-          "version": "4.0.0",
+          "version": "5.0.0",
           "repository": "eLink-parent",
-          "branch": "release/4.4.0"
+          "branch": "releases/5.0.0"
         },
         {
-          "name": "eLink-core",
-          "version": "4.4.1",
+          "name": "eLink-standard",
+          "version": "5.0.0",
           "repository": "eLink-core",
-          "branch": "release/4.4.0"
+          "branch": "releases/5.0.0"
+        },
+        {
+          "name": "eLink-marketplace",
+          "version": "2.0.0",
+          "repository": "eLink-marketplace",
+          "branch": "releases/1.1.0"
         }
       ]
     },
