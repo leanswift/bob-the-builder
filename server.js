@@ -8,6 +8,7 @@ var maven = require('maven-deploy');
 var localPath = path.join.bind(path,__dirname);
 var Checkout = nodegit.Checkout;
 var Tag = nodegit.Tag;
+var Reset = nodegit.Reset;
 
 app.get('/versions', function(req, res) {
 	fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
@@ -51,6 +52,7 @@ app.get('/:version/download', function(req, res) {
 		var clonePath = localPath("../repos/clone/");
 		//var buildDir = localPath("../repos/build");
 		//var reposPath = localPath("../repos/clone/workdir");
+
 
 		var opts = {
 				fetchOpts: {
@@ -108,12 +110,14 @@ app.get('/:version/download', function(req, res) {
 				repo = nodegit.Clone(git_url+item.repository.toString()+".git", clonePath+item.repository.toString(), opts).then(function(repo) {
 					console.log("Repository cloning done");
 						  Tag.list(repo).then(function(array){
-						 							return repo.getReferenceCommit(item.branch.toString());
-												}).then(function(commitSha) {
-						 							repo.getCommit(nodegit.Oid.fromString(commitSha.id().toString())).then(function(commit){
+						 							return repo.getReferenceCommit(item.branch);
+												}).then(function(commit) {
+						 							//repo.getCommit(nodegit.Oid.fromString(commitSha.id().toString())).then(function(commit){
 						 								console.log("get commit done");
-						 								Checkout.tree(repo, commit, { checkoutStrategy: Checkout.STRATEGY.USE_THEIRS}).then(function(){
-						 													 		//repo.setHeadDetached(commit, repo.defaultSignature, "Checkout: HEAD" + commit);
+						 								Checkout.tree(repo, commit, { checkoutStrategy: Checkout.SAFE}).then(function(){
+						 													 		repo.setHeadDetached(commit, repo.defaultSignature, "Checkout: HEAD" + commit);
+																				}).then(function(){
+																					Reset.reset(repo,commit,Reset.TYPE.HARD,{checkoutStrategy: Checkout.SAFE},item.branch);
 																			 console.log("Checkout done");
 						 										 }).catch(function(err){
 						 											 console.log(err.message, "after checkout"+item.repository);
@@ -121,9 +125,9 @@ app.get('/:version/download', function(req, res) {
 						 							}).catch(function(err){
 						 								console.log(err.message, "after getting commit"+item.repository );
 						 							});
-												}).catch(function(err){
-						 							console.log(err.message, "after getting reference"+item.repository);
-											});
+											// 	}).catch(function(err){
+											// 			console.log(err.message, "after getting reference"+item.repository);
+											// });
 				}).catch(function(err) {
 					console.log(err.message);
 				});
