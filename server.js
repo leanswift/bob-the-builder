@@ -11,7 +11,6 @@ var localPath = path.join.bind(path,__dirname);
 var Checkout = nodegit.Checkout;
 var Tag = nodegit.Tag;
 var Reset = nodegit.Reset;
-var editor = prop.createEditor();
 
 app.get('/versions', function(req, res) {
 	fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
@@ -110,9 +109,10 @@ app.get('/:version/download', function(req, res) {
 			json.eLinkBuilds.forEach(function(item, index){
 				if(item.version == req.params.version){
 					item.parameters.forEach(function(item, index) {
-						var properties = prop.read(clonePath + item.location + item.fileName);
+						var editor = prop.createEditor(clonePath + item.location + item.fileName);
 						editor.set(item.key, item.value);
-						console.log(properties.toString());
+						console.log("inside editor", editor.toString());
+						editor.save();
 					});
 				}
 			});
