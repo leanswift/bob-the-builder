@@ -4,20 +4,13 @@
       "version": "eLink-CE:5.0.0",
       "parameters": [
         {
-          "name": "Change log file location",
-          "requestKey": "logPath",
-          "type": "xml",
-          "key": "eLink.log.location",
-          "fileName": "log4j2.xml",
+          "name": "Change email error",
+          "requestKey": "m3api",
+          "type": "properties",
+          "key": "connector.send.order.error.email",
+          "value": "false",
+          "fileName": "m3api.properties",
           "location": "eLink-CE/src/main/resources/"
-        },
-        {
-          "name": "Comment H2 web server",
-          "requestKey": "h2WebServer",
-          "type": "xml",
-          "key": "beans.bean.h2WebServer",
-          "fileName": "eLink-mp-context.xml",
-          "location": "eLink-marketplace/src/main/resources"
         }
       ],
       "modules": [
@@ -28,16 +21,28 @@
           "branch": "releases/5.0.0"
         },
         {
-          "name": "eLink-standard",
+          "name": "eLink-core",
           "version": "5.0.0",
           "repository": "eLink-core",
+          "branch": "releases/5.0.0"
+        },
+        {
+          "name": "eLink-standard",
+          "version": "5.0.0",
+          "repository": "eLink-standard",
           "branch": "releases/5.0.0"
         },
         {
           "name": "eLink-marketplace",
           "version": "2.0.0",
           "repository": "eLink-marketplace",
-          "branch": "releases/1.1.0"
+          "branch": "releases/2.0.0"
+        },
+        {
+          "name": "eLink-CE",
+          "version": "5.0.0",
+          "repository": "eLink-CE",
+          "branch": "releases/5.0.0"
         }
       ]
     },
