@@ -54,9 +54,15 @@ app.get('/:version/download', function(req, res) {
     var json = JSON.parse(data);
     json.eLinkBuilds.forEach(function(item, index) {
       if(item.version == req.params.version) {
-        item.modules.forEach(function(item, index) {
-          cloneAndCheckout(item.name, item.branch);
-        });
+				// var cloneCalls = [];
+				// var mavenCalls = [];
+        // item.modules.forEach(function(item, index) {
+				// 	cloneCalls[index] = cloneAndCheckout(item);
+				// 	mavenCalls[index] = runMavenBuild(item.name)
+        // });
+				Q.all(item.modules.map(cloneAndCheckout))
+		      .then((results) => Q.all(items.modules.map(item => item.name).map(runMavenBuild)))
+		      .then((results) => console.log('done'));
       }
     });
   });
@@ -66,7 +72,7 @@ app.get('/:version/download', function(req, res) {
 * Function which accepts a repoName and a tag/branch name and then clones it
 * from git and checks out the tag.
 */
-var cloneAndCheckout=  function(repoName, tag) {
+var cloneAndCheckout=  function(module) {
   var gitUrl = "git@github.com:leanswift/";
   var clonePath = __dirname + "/repos/";
   var sshPublicKeyPath = "/home/shyam/.ssh/id_rsa_work.pub";
@@ -83,34 +89,31 @@ var cloneAndCheckout=  function(repoName, tag) {
       }
     }
   };
-
 	var repo;
 	var commit;
 
-	nodegit.Clone(gitUrl + repoName + ".git", clonePath + repoName, opts)
-        .then(function(gitRepo) {
-					repo = gitRepo;
-          console.log("Finished cloning %s", repoName);
-          return nodegit.Tag.list(repo);
-        })
-        .then(function(array){
-          return repo.getReferenceCommit(tag);
-        })
-        .then(function(refCommit) {
-					commit =refCommit;
-          return nodegit.Checkout.tree(repo, commit, { checkoutStrategy: nodegit.Checkout.SAFE });
-        })
-        .then(function(){
-          return repo.setHeadDetached(commit, repo.defaultSignature, "Checkout: HEAD" + commit);
-        })
-        .then(function(){
-            return nodegit.Reset.reset(repo, commit, nodegit.Reset.TYPE.HARD,{checkoutStrategy: nodegit.Checkout.SAFE}, tag);
-        })
-        .catch(function(err) {
-          console.log(err.message);
-        }).done(function(){
-          console.log("Finished checkout of %s", repoName);
-        });
+	return nodegit.Clone(gitUrl + module.name + ".git", clonePath + module.name, opts)
+	        .then(function(gitRepo) {
+						repo = gitRepo;
+	          console.log("Finished cloning %s", module.name);
+	          return nodegit.Tag.list(repo);
+	        })
+	        .then(function(array){
+	          return repo.getReferenceCommit(module.branch);
+	        })
+	        .then(function(refCommit) {
+						commit = refCommit;
+	          return nodegit.Checkout.tree(repo, commit, { checkoutStrategy: nodegit.Checkout.SAFE });
+	        })
+	        .then(function(){
+	          return repo.setHeadDetached(commit, repo.defaultSignature, "Checkout: HEAD" + commit);
+	        })
+	        .then(function(){
+	            return nodegit.Reset.reset(repo, commit, nodegit.Reset.TYPE.HARD,{checkoutStrategy: nodegit.Checkout.SAFE}, module.branch);
+	        })
+	        .catch(function(err) {
+	          console.log(err.message);
+	        });
 }
 
 /**
@@ -118,7 +121,7 @@ var cloneAndCheckout=  function(repoName, tag) {
 */
 var runMavenBuild = function(repo) {
 	var mvn = maven.create({
-		cwd: clonePath + repo
+		cwd: __dirname + "/repos/" + repo
 	});
 	return mvn.execute(['clean', 'install']);
 }
