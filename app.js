@@ -84,28 +84,33 @@ var cloneAndCheckout=  function(repoName, tag) {
     }
   };
 
-  var repo = nodegit.Clone(gitUrl + repoName + ".git", clonePath + repoName, opts)
-            .then(function(repo) {
-              console.log("Finished cloning %s", repoName);
-              return Tag.list(repo);
-            })
-            .then(function(array){
-              return repo.getReferenceCommit(tag);
-            })
-            .then(function(commit) {
-              return Checkout.tree(repo, commit, { checkoutStrategy: Checkout.SAFE });
-            })
-            .then(function(){
-              return repo.setHeadDetached(commit, repo.defaultSignature, "Checkout: HEAD" + commit);
-            })
-            .then(function(){
-                return Reset.reset(repo, commit, Reset.TYPE.HARD,{checkoutStrategy: Checkout.SAFE}, tag);
-            })
-            .catch(function(err) {
-              console.log(err.message);
-            }).done(function(){
-              console.log("Finished checkout of %s", repoName);
-            });
+	var repo;
+	var commit;
+
+	nodegit.Clone(gitUrl + repoName + ".git", clonePath + repoName, opts)
+        .then(function(gitRepo) {
+					repo = gitRepo;
+          console.log("Finished cloning %s", repoName);
+          return nodegit.Tag.list(repo);
+        })
+        .then(function(array){
+          return repo.getReferenceCommit(tag);
+        })
+        .then(function(refCommit) {
+					commit =refCommit;
+          return nodegit.Checkout.tree(repo, commit, { checkoutStrategy: nodegit.Checkout.SAFE });
+        })
+        .then(function(){
+          return repo.setHeadDetached(commit, repo.defaultSignature, "Checkout: HEAD" + commit);
+        })
+        .then(function(){
+            return nodegit.Reset.reset(repo, commit, nodegit.Reset.TYPE.HARD,{checkoutStrategy: nodegit.Checkout.SAFE}, tag);
+        })
+        .catch(function(err) {
+          console.log(err.message);
+        }).done(function(){
+          console.log("Finished checkout of %s", repoName);
+        });
 }
 
 /**
