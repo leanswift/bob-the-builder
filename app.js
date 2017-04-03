@@ -61,7 +61,7 @@ app.get('/:version/download', function(req, res) {
 				// 	mavenCalls[index] = runMavenBuild(item.name)
         // });
 				Q.all(item.modules.map(cloneAndCheckout))
-		      .then((results) => Q.all(items.modules.map(item => item.name).map(runMavenBuild)))
+		      .then((results) => Q.all(item.modules.map(item => item.name).map(runMavenBuild)))
 		      .then((results) => console.log('done'));
       }
     });
