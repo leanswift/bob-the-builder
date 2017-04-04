@@ -54,15 +54,16 @@ app.get('/:version/download', function(req, res) {
     var json = JSON.parse(data);
     json.eLinkBuilds.forEach(function(item, index) {
       if(item.version == req.params.version) {
-				// var cloneCalls = [];
-				// var mavenCalls = [];
-        // item.modules.forEach(function(item, index) {
-				// 	cloneCalls[index] = cloneAndCheckout(item);
-				// 	mavenCalls[index] = runMavenBuild(item.name)
-        // });
-				Q.all(item.modules.map(cloneAndCheckout))
-		      .then((results) => Q.all(item.modules.map(item => item.name).map(runMavenBuild)))
-		      .then((results) => console.log('done'));
+				var promise = Q.all(item.modules.map(cloneAndCheckout));
+				promise
+		      .then((results) => {
+						item.modules.forEach((module) => {
+							promise = promise.then(() => runMavenBuild(module.name));
+						});
+						return promise;
+					})
+		      .then((results) => console.log('done'))
+					.catch((error) => console.log(error));
       }
     });
   });
