@@ -1,12 +1,16 @@
 var path = require('path');
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
 var fs = require('fs');
 var nodegit = require('nodegit');
 var maven = require('maven');
 var Q = require('q');
 var S = require('string');
 var appConfig = require('./appconfig.json');
+var prop = require('properties-parser');
+
+app.use(bodyParser.json());
 
 /**
 * Service to get list of versions of eLink which can be downloaded
@@ -51,13 +55,25 @@ app.get('/:version/customizables', function(req, res) {
 /**
 * Service to download a given version of eLink
 */
-app.get('/:version/download', function(req, res) {
+app.post('/:version/download', function(req, res) {
+	debugger;
   fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
     var json = JSON.parse(data);
     json.eLinkBuilds.forEach(function(item, index) {
       if(item.version == req.params.version) {
 				var promise = Q.all(item.modules.map(cloneAndCheckout));
 				promise
+					.then(() => {
+						debugger;
+						req.body.configurations.forEach((configuration) => {
+							var indexOfConfig = getIndex(configuration.key, item.parameters);
+							if(indexOfConfig > -1) {
+								configureValue(item.parameters[indexOfConfig], configuration.value);
+							} else {
+								throw new Error('The property is not configurable');
+							}
+						});
+					})
 		      .then((results) => {
 						item.modules.forEach((module) => {
 							promise = promise.then(() => runMavenBuild(module.name));
@@ -88,6 +104,31 @@ app.get('/:version/download', function(req, res) {
   });
 });
 
+/**
+* Edits properties file
+*/
+var configureValue = function(configuration, value) {
+	var fileEditor = prop.createEditor(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName);
+	fileEditor.set(configuration.key, value);
+	fileEditor.save();
+}
+
+/**
+* Gets the index of customizable for a given customizable key
+*/
+var getIndex = function(config, parameters) {
+	debugger;
+	var keys = [];
+	parameters.forEach((item, index) => {
+		keys[index] = item.requestKey;
+	});
+	return keys.indexOf(config);
+};
+
+/**
+* Function which accepts a directory name and returns a file name which
+* has .war extension in it.
+*/
 var getWarPath = function(moduleName) {
 	var warDir = __dirname + appConfig.clonePath + moduleName + '/target/';
 	var filePath = null;
