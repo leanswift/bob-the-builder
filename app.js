@@ -5,6 +5,7 @@ var fs = require('fs');
 var nodegit = require('nodegit');
 var maven = require('maven');
 var Q = require('q');
+var S = require('string');
 
 /**
 * Service to get list of versions of eLink which can be downloaded
@@ -62,12 +63,40 @@ app.get('/:version/download', function(req, res) {
 						});
 						return promise;
 					})
-		      .then((results) => console.log('done'))
-					.catch((error) => console.log(error));
+		      .then(() => {
+						var warPath = getWarPath(item.modules[item.modules.length -1].name);
+						if(warPath == null) {
+							var errorResponse = {
+								message: "Could not find war file in web module"
+							};
+							res.write(errorResponse);
+						} else {
+							res.download(warPath);
+						}
+					})
+					.catch((error) => {
+						console.log(error);
+						var errorResponse = {
+							error: error,
+							message: "Build failed"
+						};
+						res.write(errorResponse);
+					});
       }
     });
   });
 });
+
+var getWarPath = function(moduleName) {
+	var warDir = __dirname + '/repos/' + moduleName + '/target/';
+	var filePath = null;
+	fs.readdirSync(warDir).forEach((name) => {
+		if(S(name).endsWith('.war')) {
+			filePath = warDir + '/' + name;
+		}
+	});
+	return filePath;
+};
 
 /**
 * Function which accepts a repoName and a tag/branch name and then clones it
