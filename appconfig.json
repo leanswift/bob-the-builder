@@ -1,0 +1,6 @@
+{
+  "gitUrl": "git@github.com:leanswift/",
+  "clonePath": "/repos/",
+  "sshPublicKeyPath": "/home/shyam/.ssh/id_rsa_work.pub",
+  "sshPrivateKeyPath": "/home/shyam/.ssh/id_rsa_work"
+}

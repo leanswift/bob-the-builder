@@ -6,6 +6,7 @@ var nodegit = require('nodegit');
 var maven = require('maven');
 var Q = require('q');
 var S = require('string');
+var appConfig = require('./appconfig.json');
 
 /**
 * Service to get list of versions of eLink which can be downloaded
@@ -88,7 +89,7 @@ app.get('/:version/download', function(req, res) {
 });
 
 var getWarPath = function(moduleName) {
-	var warDir = __dirname + '/repos/' + moduleName + '/target/';
+	var warDir = __dirname + appConfig.clonePath + moduleName + '/target/';
 	var filePath = null;
 	fs.readdirSync(warDir).forEach((name) => {
 		if(S(name).endsWith('.war')) {
@@ -103,10 +104,6 @@ var getWarPath = function(moduleName) {
 * from git and checks out the tag.
 */
 var cloneAndCheckout=  function(module) {
-  var gitUrl = "git@github.com:leanswift/";
-  var clonePath = __dirname + "/repos/";
-  var sshPublicKeyPath = "/home/shyam/.ssh/id_rsa_work.pub";
-  var sshPrivateKeyPath = "/home/shyam/.ssh/id_rsa_work";
   var opts = {
     fetchOpts: {
       callbacks: {
@@ -114,7 +111,7 @@ var cloneAndCheckout=  function(module) {
           return 1;
         },
         credentials: function(url, userName) {
-          return nodegit.Cred.sshKeyNew(userName, sshPublicKeyPath, sshPrivateKeyPath, "");
+          return nodegit.Cred.sshKeyNew(userName, appConfig.sshPublicKeyPath, appConfig.sshPrivateKeyPath, "");
         }
       }
     }
@@ -122,7 +119,7 @@ var cloneAndCheckout=  function(module) {
 	var repo;
 	var commit;
 
-	return nodegit.Clone(gitUrl + module.name + ".git", clonePath + module.name, opts)
+	return nodegit.Clone(appConfig.gitUrl + module.name + ".git", __dirname + appConfig.clonePath + module.name, opts)
 	        .then(function(gitRepo) {
 						repo = gitRepo;
 	          console.log("Finished cloning %s", module.name);
@@ -151,7 +148,7 @@ var cloneAndCheckout=  function(module) {
 */
 var runMavenBuild = function(repo) {
 	var mvn = maven.create({
-		cwd: __dirname + "/repos/" + repo
+		cwd: __dirname + appConfig.clonePath + repo
 	});
 	return mvn.execute(['clean', 'install']);
 }
