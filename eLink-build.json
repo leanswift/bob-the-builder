@@ -4,11 +4,10 @@
       "version": "eLink-CE:5.0.0",
       "parameters": [
         {
-          "name": "Change email error",
-          "requestKey": "m3api",
+          "name": "M3 API host",
+          "requestKey": "m3apiHost",
           "type": "properties",
-          "key": "connector.send.order.error.email",
-          "value": "false",
+          "key": "m3.server.host",
           "fileName": "m3api.properties",
           "location": "eLink-CE/src/main/resources/"
         }

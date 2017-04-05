@@ -56,7 +56,6 @@ app.get('/:version/customizables', function(req, res) {
 * Service to download a given version of eLink
 */
 app.post('/:version/download', function(req, res) {
-	debugger;
   fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
     var json = JSON.parse(data);
     json.eLinkBuilds.forEach(function(item, index) {
@@ -64,7 +63,6 @@ app.post('/:version/download', function(req, res) {
 				var promise = Q.all(item.modules.map(cloneAndCheckout));
 				promise
 					.then(() => {
-						debugger;
 						req.body.configurations.forEach((configuration) => {
 							var indexOfConfig = getIndex(configuration.key, item.parameters);
 							if(indexOfConfig > -1) {
@@ -117,7 +115,6 @@ var configureValue = function(configuration, value) {
 * Gets the index of customizable for a given customizable key
 */
 var getIndex = function(config, parameters) {
-	debugger;
 	var keys = [];
 	parameters.forEach((item, index) => {
 		keys[index] = item.requestKey;
