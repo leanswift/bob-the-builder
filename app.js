@@ -9,6 +9,7 @@ var Q = require('q');
 var S = require('string');
 var appConfig = require('./appconfig.json');
 var prop = require('properties-parser');
+var rimraf = require('rimraf');
 
 app.use(bodyParser.json());
 
@@ -56,6 +57,10 @@ app.get('/:version/customizables', function(req, res) {
 * Service to download a given version of eLink
 */
 app.post('/:version/download', function(req, res) {
+	if(fs.existsSync(__dirname + appConfig.clonePath)) {
+		console.log("Removing %s", __dirname + appConfig.clonePath);
+		rimraf.sync(__dirname + appConfig.clonePath);
+	}
   fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
     var json = JSON.parse(data);
     json.eLinkBuilds.forEach(function(item, index) {
@@ -68,7 +73,7 @@ app.post('/:version/download', function(req, res) {
 							if(indexOfConfig > -1) {
 								configureValue(item.parameters[indexOfConfig], configuration.value);
 							} else {
-								throw new Error('The property is not configurable');
+								throw new Error('The property ' + configuration.key + ' is not configurable');
 							}
 						});
 					})
