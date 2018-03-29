@@ -111,10 +111,24 @@ app.post('/:version/download', function(req, res) {
 * Edits properties file
 */
 var configureValue = function(configuration, value) {
-	var fileEditor = prop.createEditor(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName);
-	fileEditor.set(configuration.key, value);
-	fileEditor.save();
-}
+	if(configuration.type === 'properties') {
+		var fileEditor = prop.createEditor(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName);
+		fileEditor.set(configuration.key, value);
+		fileEditor.save();
+	} else if(configuration.type === 'regex') {
+		fs.readFile(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName, (err, data) => {
+			if(err) console.log(err);
+			console.log("Contents of file: " + data);
+			var result = data.toString().replace("${catalina.base}/logs/leanswift/eLink-7.4.0", value);
+
+			fs.writeFile(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
+				if (err) return console.log(err);
+			});
+		});
+	} else {
+		console.error("Unsupported file type '" + configuration.type + "'");
+	}
+};
 
 /**
 * Gets the index of customizable for a given customizable key
@@ -146,7 +160,7 @@ var getWarPath = function(moduleName) {
 * Function which accepts a repoName and a tag/branch name and then clones it
 * from git and checks out the tag.
 */
-var cloneAndCheckout=  function(module) {
+var cloneAndCheckout = function(module) {
   var opts = {
     fetchOpts: {
       callbacks: {
@@ -159,6 +173,11 @@ var cloneAndCheckout=  function(module) {
       }
     }
   };
+
+	if(typeof module.branch != 'undefined' && module.branch !== null) {
+		opts.checkoutBranch = module.branch;
+	}
+
 	var repo;
 	var commit;
 
@@ -169,7 +188,7 @@ var cloneAndCheckout=  function(module) {
 	          return nodegit.Tag.list(repo);
 	        })
 	        .then(function(array){
-	          return repo.getReferenceCommit(module.branch);
+	          return repo.getReferenceCommit(module.tag);
 	        })
 	        .then(function(refCommit) {
 						commit = refCommit;
@@ -184,7 +203,7 @@ var cloneAndCheckout=  function(module) {
 	        .catch(function(err) {
 	          console.log(err.message);
 	        });
-}
+};
 
 /**
 * A function which runs `mvn clean install` on the root directory of given repository

@@ -1,2 +1,4 @@
 node_modules/**
 repos/**
+package-lock.json
+.vscode/settings.json
