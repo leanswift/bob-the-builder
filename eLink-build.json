@@ -70,6 +70,7 @@
           "name": "Log file location",
           "requestKey": "logLocation",
           "type": "regex",
+          "expression": "\\${catalina\\.base}/logs/leanswift/eLink-\\d\\.\\d\\.\\d",
           "fileName": "logback.xml",
           "location": "eLink-resources/src/main/resources"
         }
