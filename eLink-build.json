@@ -1,6 +1,69 @@
 {
   "eLinkBuilds": [
     {
+      "version": "eLink-EE-7.5.0",
+      "parameters": [
+        {
+          "name": "Log file location",
+          "requestKey": "logLocation",
+          "type": "regex",
+          "expression": "\\${catalina\\.base}/logs/leanswift/eLink-\\d\\.\\d\\.\\d",
+          "fileName": "logback.xml",
+          "location": "eLink-resources/src/main/resources"
+        }
+      ],
+      "modules": [
+        {
+          "name": "eLink-core",
+          "version": "7.1.0",
+          "repository": "eLink-core",
+          "branch": "feature/genericAPI"
+        },
+        {
+          "name": "eLink-standard",
+          "version": "7.2.0",
+          "repository": "eLink-standard",
+          "branch": "feature/genericRequest"
+        },
+        {
+          "name": "eLink-base",
+          "version": "3.1.0",
+          "repository": "eLink-base",
+          "branch": "feature/genericRequest"
+        },
+        {
+          "name": "eLink-idm",
+          "version": "3.1.2",
+          "repository": "eLink-idm",
+          "branch": "release/3.1.2"
+        },
+        {
+          "name": "eLink-order",
+          "version": "2.4.1",
+          "repository": "eLink-order",
+          "branch": "release/2.4.1"
+        },
+        {
+          "name": "eLink-finance",
+          "version": "3.1.0",
+          "repository": "eLink-finance",
+          "branch": "feature/cms100mi"
+        },
+        {
+          "name": "eLink-resources",
+          "version": "2.2.2",
+          "repository": "eLink-resources",
+          "branch": "release/2.2.2"
+        },
+        {
+          "name": "eLink-EE",
+          "version": "7.5.0",
+          "repository": "eLink-EE",
+          "branch": "release/7.5.0"
+        }
+      ]
+    },
+    {
       "version": "eLink-EE-7.4.0",
       "parameters": [
         {

@@ -1,5 +1,6 @@
 var path = require('path');
 var express = require('express');
+var cors = require('cors');
 var app = express();
 var bodyParser = require('body-parser');
 var fs = require('fs');
@@ -12,6 +13,7 @@ var prop = require('properties-parser');
 var rimraf = require('rimraf');
 
 app.use(bodyParser.json());
+app.use(cors());
 
 /**
 * Service to get list of versions of eLink which can be downloaded
@@ -119,8 +121,8 @@ var configureValue = function(configuration, value) {
 		fs.readFile(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName, (err, data) => {
 			if(err) console.log(err);
 			console.log("Contents of file: " + data);
-			var result = data.toString().replace("${catalina.base}/logs/leanswift/eLink-7.4.0", value);
-
+			console.log("Regex: " + new RegExp(configuration.expression));
+			var result = data.toString().replace(new RegExp(configuration.expression), value);
 			fs.writeFile(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
 				if (err) return console.log(err);
 			});
@@ -218,7 +220,7 @@ var runMavenBuild = function(repo) {
 /**
 * Node server initialization
 */
-var server = app.listen(8888, "127.0.0.1", function() {
+var server = app.listen(8888, "", function() {
 	var host = server.address().address;
 	var port = server.address().port;
 
