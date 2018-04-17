@@ -122,10 +122,12 @@ var configureValue = function(configuration, value) {
 			if(err) console.log(err);
 			console.log("Contents of file: " + data);
 			console.log("Regex: " + new RegExp(configuration.expression));
-			var result = data.toString().replace(new RegExp(configuration.expression), value);
-			fs.writeFile(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
-				if (err) return console.log(err);
-			});
+			if(value !== null && value.length > 0) {
+				var result = data.toString().replace(new RegExp(configuration.expression), value);
+				fs.writeFile(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
+					if (err) return console.log(err);
+				});
+			}
 		});
 	} else {
 		console.error("Unsupported file type '" + configuration.type + "'");
