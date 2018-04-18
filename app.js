@@ -11,6 +11,7 @@ var S = require('string');
 var appConfig = require('./appconfig.json');
 var prop = require('properties-parser');
 var rimraf = require('rimraf');
+var uniqid = require('uniqid');
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -59,21 +60,22 @@ app.get('/:version/customizables', function(req, res) {
 * Service to download a given version of eLink
 */
 app.post('/:version/download', function(req, res) {
-	if(fs.existsSync(__dirname + appConfig.clonePath)) {
-		console.log("Removing %s", __dirname + appConfig.clonePath);
-		rimraf.sync(__dirname + appConfig.clonePath);
+	var requestId = uniqid();
+	if(fs.existsSync(__dirname + appConfig.clonePath + requestId)) {
+		console.log("Removing %s", __dirname + appConfig.clonePath + requestId);
+		rimraf.sync(__dirname + appConfig.clonePath + requestId);
 	}
   fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
     var json = JSON.parse(data);
     json.eLinkBuilds.forEach(function(item, index) {
       if(item.version == req.params.version) {
-				var promise = Q.all(item.modules.map(cloneAndCheckout));
+				var promise = Q.all(item.modules.map((module) => { return cloneAndCheckout(module, requestId); }));
 				promise
 					.then(() => {
 						req.body.configurations.forEach((configuration) => {
 							var indexOfConfig = getIndex(configuration.key, item.parameters);
 							if(indexOfConfig > -1) {
-								configureValue(item.parameters[indexOfConfig], configuration.value);
+								configureValue(item.parameters[indexOfConfig], requestId, configuration.value);
 							} else {
 								throw new Error('The property ' + configuration.key + ' is not configurable');
 							}
@@ -81,12 +83,12 @@ app.post('/:version/download', function(req, res) {
 					})
 		      .then((results) => {
 						item.modules.forEach((module) => {
-							promise = promise.then(() => runMavenBuild(module.name));
+							promise = promise.then(() => runMavenBuild(module.name, requestId));
 						});
 						return promise;
 					})
 		      .then(() => {
-						var warPath = getWarPath(item.modules[item.modules.length -1].name);
+						var warPath = getWarPath(item.modules[item.modules.length -1].name, requestId);
 						if(warPath == null) {
 							var errorResponse = {
 								message: "Could not find war file in web module"
@@ -94,6 +96,7 @@ app.post('/:version/download', function(req, res) {
 							res.write(errorResponse);
 						} else {
 							res.download(warPath);
+							rimraf.sync(__dirname + appConfig.clonePath + requestId);
 						}
 					})
 					.catch((error) => {
@@ -112,19 +115,19 @@ app.post('/:version/download', function(req, res) {
 /**
 * Edits properties file
 */
-var configureValue = function(configuration, value) {
+var configureValue = function(configuration, requestId, value) {
 	if(configuration.type === 'properties') {
-		var fileEditor = prop.createEditor(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName);
+		var fileEditor = prop.createEditor(__dirname + appConfig.clonePath + requestId + '/' + configuration.location + '/' + configuration.fileName);
 		fileEditor.set(configuration.key, value);
 		fileEditor.save();
 	} else if(configuration.type === 'regex') {
-		fs.readFile(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName, (err, data) => {
+		fs.readFile(__dirname + appConfig.clonePath + requestId + '/' + configuration.location + '/' + configuration.fileName, (err, data) => {
 			if(err) console.log(err);
 			console.log("Contents of file: " + data);
 			console.log("Regex: " + new RegExp(configuration.expression));
 			if(value !== null && value.length > 0) {
 				var result = data.toString().replace(new RegExp(configuration.expression), value);
-				fs.writeFile(__dirname + appConfig.clonePath + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
+				fs.writeFile(__dirname + appConfig.clonePath + requestId + '/' + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
 					if (err) return console.log(err);
 				});
 			}
@@ -149,8 +152,8 @@ var getIndex = function(config, parameters) {
 * Function which accepts a directory name and returns a file name which
 * has .war extension in it.
 */
-var getWarPath = function(moduleName) {
-	var warDir = __dirname + appConfig.clonePath + moduleName + '/target/';
+var getWarPath = function(moduleName, requestId) {
+	var warDir = __dirname + appConfig.clonePath + requestId + '/' + moduleName + '/target/';
 	var filePath = null;
 	fs.readdirSync(warDir).forEach((name) => {
 		if(S(name).endsWith('.war')) {
@@ -164,7 +167,7 @@ var getWarPath = function(moduleName) {
 * Function which accepts a repoName and a tag/branch name and then clones it
 * from git and checks out the tag.
 */
-var cloneAndCheckout = function(module) {
+var cloneAndCheckout = function(module, requestId) {
   var opts = {
     fetchOpts: {
       callbacks: {
@@ -185,7 +188,7 @@ var cloneAndCheckout = function(module) {
 	var repo;
 	var commit;
 
-	return nodegit.Clone(appConfig.gitUrl + module.name + ".git", __dirname + appConfig.clonePath + module.name, opts)
+	return nodegit.Clone(appConfig.gitUrl + module.name + ".git", __dirname + appConfig.clonePath + requestId + '/' + module.name, opts)
 	        .then(function(gitRepo) {
 						repo = gitRepo;
 	          console.log("Finished cloning %s", module.name);
@@ -212,9 +215,9 @@ var cloneAndCheckout = function(module) {
 /**
 * A function which runs `mvn clean install` on the root directory of given repository
 */
-var runMavenBuild = function(repo) {
+var runMavenBuild = function(repo, requestId) {
 	var mvn = maven.create({
-		cwd: __dirname + appConfig.clonePath + repo
+		cwd: __dirname + appConfig.clonePath + requestId + '/' + repo
 	});
 	return mvn.execute(['clean', 'install']);
 }
