@@ -95,8 +95,9 @@ app.post('/:version/download', function(req, res) {
 							};
 							res.write(errorResponse);
 						} else {
-							res.download(warPath);
-							rimraf.sync(__dirname + appConfig.clonePath + requestId);
+							res.download(warPath, null, (err) => {
+								rimraf.sync(__dirname + appConfig.clonePath + requestId);
+							});
 						}
 					})
 					.catch((error) => {
