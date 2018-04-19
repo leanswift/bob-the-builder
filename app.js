@@ -126,7 +126,7 @@ var configureValue = function(configuration, requestId, value) {
 			if(err) console.log(err);
 			console.log("Contents of file: " + data);
 			console.log("Regex: " + new RegExp(configuration.expression));
-			if(value !== null && value.length > 0) {
+			if(typeof value !== 'undefined' && value !== null && value.length > 0) {
 				var result = data.toString().replace(new RegExp(configuration.expression), value);
 				fs.writeFile(__dirname + appConfig.clonePath + requestId + '/' + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
 					if (err) return console.log(err);
