@@ -12,6 +12,16 @@ var appConfig = require('./appconfig.json');
 var prop = require('properties-parser');
 var rimraf = require('rimraf');
 var uniqid = require('uniqid');
+var Joi = require('joi');
+var expressJoi = require('express-joi-validator');
+
+const configSchema = {
+	body: {
+		version: Joi.string().required(),
+		modules: Joi.array().required(),
+		parameters: Joi.array().required()
+	}
+};
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -111,6 +121,35 @@ app.post('/:version/download', function(req, res) {
       }
     });
   });
+});
+
+app.post('/versions', expressJoi(configSchema), function(req, res) {
+	let buildConfigurations = JSON.parse(fs.readFileSync(__dirname + "/eLink-build.json", "utf-8").toString());
+	let eLinkBuilds = buildConfigurations.eLinkBuilds;
+	try {
+		validateModule(eLinkBuilds, req.body);
+		eLinkBuilds[eLinkBuilds.length] = req.body;
+		fs.writeFile(__dirname + "/eLink-build.json", JSON.stringify({ eLinkBuilds: eLinkBuilds }));
+		res.status(200).send({
+			message: "Added new configuration"
+		});
+	} catch (err) {
+		res.status(400).send({ message: err.message });
+	}
+});
+
+var validateModule = function(eLinkBuilds, module) {
+	eLinkBuilds.forEach((build) => {
+		if(build.version === module.version) {
+			throw new Error('Build already exists in eLink-build.json');
+		}
+	});
+};
+
+app.use(function(err, req, res, next) {
+	if(err.isBoom) {
+		return res.status(err.output.statusCode).json(err.output.payload);
+	}
 });
 
 /**
