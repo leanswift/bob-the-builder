@@ -24,6 +24,10 @@ const configSchema = {
 };
 
 app.use(bodyParser.json());
+app.use(function (req, res, next) {
+	res.setHeader('Content-Type', 'application/json');
+	next();
+});
 app.use(cors());
 
 /**
