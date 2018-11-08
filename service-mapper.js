@@ -1,0 +1,28 @@
+var eLinkService = require('./eLink/eLink-service');
+
+var resolveService = function(serviceName) {
+    var service = serviceMap[serviceName];
+    verifyService(service);
+
+    return service;
+};
+
+var verifyService = function(service) {
+    if(typeof service.getVersions !== 'function') {
+        throw Error("getVersions() is not implemented in " + service);
+    }
+    if(typeof service.getCustomizables !== 'function') {
+        throw Error("getCustomizables() is not implemented in " + service);
+    }
+    if(typeof service.download !== 'function') {
+        throw Error("download() is not implemented in " + service);
+    }
+};
+
+var serviceMap = {
+    eLink: eLinkService
+};
+
+module.exports = {
+    resolveService: resolveService
+};
