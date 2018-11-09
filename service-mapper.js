@@ -1,4 +1,5 @@
 var eLinkService = require('./eLink/eLink-service');
+var h5Service = require('./h5/h5-service');
 
 var resolveService = function(serviceName) {
     var service = serviceMap[serviceName];
@@ -20,7 +21,8 @@ var verifyService = function(service) {
 };
 
 var serviceMap = {
-    eLink: eLinkService
+    eLink: eLinkService,
+    h5: h5Service
 };
 
 module.exports = {

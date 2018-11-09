@@ -1,0 +1,25 @@
+{
+    "h5Builds": [
+        {
+            "version": "ar-webapp-7.0.0",
+            "modules": [
+                {
+                    "name": "h5-webapp-ar",
+                    "version": "7.0.0",
+                    "repository": "h5-webapp-ar",
+                    "tag": "v7.0.0"
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "Environment",
+                    "requestKey": "environment",
+                    "type": "json",
+                    "key": "environment",
+                    "fileName": "dev-config.json",
+                    "location": "h5-webapp-ar/"
+                }
+            ]
+        }
+    ]
+}

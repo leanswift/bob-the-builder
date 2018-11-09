@@ -3,12 +3,11 @@ var cors = require('cors');
 var app = express();
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var rimraf = require('rimraf');
 var uniqid = require('uniqid');
 var Joi = require('joi');
 var expressJoi = require('express-joi-validator');
 
-var appConfig = require('./appconfig.json');
+var fileUtil = require('./util/file-util');
 var serviceMapper = require('./service-mapper');
 
 const configSchema = {
@@ -66,7 +65,7 @@ app.post('/:service/:version/download', function(req, res, next) {
 	service.download(req.params.version, requestId, req.body.configurations)
 		.then(function(result) {
 			res.download(result, null, (err) => {
-				rimraf.sync(__dirname + appConfig.clonePath + requestId);
+				fileUtil.clearRepository(requestId);
 			});
 		})
 		.catch(function(err) {
@@ -74,6 +73,7 @@ app.post('/:service/:version/download', function(req, res, next) {
 				message: 'Build failed. Check the build file for requested build.',
 				originalError: err
 			};
+			fileUtil.clearRepository(requestId);
 			next(err);
 		});
 });

@@ -64,10 +64,7 @@ var getCustomizables = function(version) {
  * @param {array} customizations 
  */
 var download = function(version, requestId, customizations) {
-    if(fs.existsSync(fileUtil.getRepositoryLocation() + requestId)) {
-		console.log("Removing %s", fileUtil.getRepositoryLocation() + requestId);
-		rimraf.sync(fileUtil.getRepositoryLocation() + requestId);
-    }
+    fileUtil.clearRepository();
     return new Promise(function(fulfilled, rejected) {
             fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
                 if(err) {
@@ -148,7 +145,8 @@ var configureValue = function(configuration, requestId, value) {
 			}
 		});
 	} else {
-		console.error("Unsupported file type '" + configuration.type + "'");
+        console.error("Unsupported customization type '" + configuration.type + "'");
+        throw Error("Unsupported customization type '" + configuration.type + "'");
 	}
 };
 
