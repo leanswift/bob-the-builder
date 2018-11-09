@@ -1,12 +1,11 @@
-var path = require('path');
 var fs = require('fs');
 var Q = require('q');
 var S = require('string');
 var prop = require('properties-parser');
 
+var fileUtil = require('./../util/file-util');
 var gitService = require('./../common/git-service');
 var mavenService = require('../common/maven-service');
-var appConfig = require('./../appconfig.json');
 
 /**
  * Lists versions of elink available for download
@@ -65,9 +64,9 @@ var getCustomizables = function(version) {
  * @param {array} customizations 
  */
 var download = function(version, requestId, customizations) {
-    if(fs.existsSync(__dirname + '/..' + appConfig.clonePath + requestId)) {
-		console.log("Removing %s", __dirname + '/..' + appConfig.clonePath + requestId);
-		rimraf.sync(__dirname + '/..' + appConfig.clonePath + requestId);
+    if(fs.existsSync(fileUtil.getRepositoryLocation() + requestId)) {
+		console.log("Removing %s", fileUtil.getRepositoryLocation() + requestId);
+		rimraf.sync(fileUtil.getRepositoryLocation() + requestId);
     }
     return new Promise(function(fulfilled, rejected) {
             fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
@@ -133,17 +132,17 @@ var getIndex = function(config, parameters) {
 */
 var configureValue = function(configuration, requestId, value) {
 	if(configuration.type === 'properties') {
-		var fileEditor = prop.createEditor(__dirname + '/..' + appConfig.clonePath + requestId + '/' + configuration.location + '/' + configuration.fileName);
+		var fileEditor = prop.createEditor(fileUtil.getRepositoryLocation() + requestId + '/' + configuration.location + '/' + configuration.fileName);
 		fileEditor.set(configuration.key, value);
 		fileEditor.save();
 	} else if(configuration.type === 'regex') {
-		fs.readFile(__dirname + '/..' + appConfig.clonePath + requestId + '/' + configuration.location + '/' + configuration.fileName, (err, data) => {
+		fs.readFile(fileUtil.getRepositoryLocation() + requestId + '/' + configuration.location + '/' + configuration.fileName, (err, data) => {
 			if(err) console.log(err);
 			console.log("Contents of file: " + data);
 			console.log("Regex: " + new RegExp(configuration.expression));
 			if(typeof value !== 'undefined' && value !== null && value.length > 0) {
 				var result = data.toString().replace(new RegExp(configuration.expression), value);
-				fs.writeFile(__dirname + '/..' + appConfig.clonePath + requestId + '/' + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
+				fs.writeFile(fileUtil.getRepositoryLocation() + requestId + '/' + configuration.location + '/' + configuration.fileName, result, 'utf8', function (err) {
 					if (err) return console.log(err);
 				});
 			}
@@ -158,7 +157,7 @@ var configureValue = function(configuration, requestId, value) {
 * has .war extension in it.
 */
 var getWarPath = function(moduleName, requestId) {
-	var warDir = __dirname + '/..' + appConfig.clonePath + requestId + '/' + moduleName + '/target/';
+	var warDir = fileUtil.getRepositoryLocation() + requestId + '/' + moduleName + '/target/';
 	var filePath = null;
 	fs.readdirSync(warDir).forEach((name) => {
 		if(S(name).endsWith('.war')) {

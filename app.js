@@ -25,35 +25,42 @@ app.use(function (req, res, next) {
 	next();
 });
 app.use(cors());
+// app.use(errorHandler);
 
 /**
 * Service to get list of versions of eLink which can be downloaded
 */
-app.get('/:service/versions', function(req, res) {
+app.get('/:service/versions', function(req, res, next) {
 	var response = {};
 	var service = serviceMapper.resolveService(req.params.service);
 	service.getVersions().then((result) => {
 		response.versions = result;
 		res.end(JSON.stringify(response));
+	})
+	.catch(function(err) {
+		next(err);
 	});
 });
 
 /**
 * Service to get list of customizables for selected version of eLink
 */
-app.get('/:service/:version/customizables', function(req, res) {
+app.get('/:service/:version/customizables', function(req, res, next) {
 	var response = {};
 	var service = serviceMapper.resolveService(req.params.service);
 	service.getCustomizables(req.params.version).then(function(result) {
 		response.customizables = result;
 		res.end(JSON.stringify(response));
+	})
+	.catch(function(err) {
+		next(err);
 	});
 });
 
 /**
 * Service to download a given version of eLink
 */
-app.post('/:service/:version/download', function(req, res) {
+app.post('/:service/:version/download', function(req, res, next) {
 	var requestId = uniqid();
 	var service = serviceMapper.resolveService(req.params.service);
 	service.download(req.params.version, requestId, req.body.configurations)
@@ -63,11 +70,15 @@ app.post('/:service/:version/download', function(req, res) {
 			});
 		})
 		.catch(function(err) {
-			throw Error(err);
+			err = {
+				message: 'Build failed. Check the build file for requested build.',
+				originalError: err
+			};
+			next(err);
 		});
 });
 
-app.post('/versions', expressJoi(configSchema), function(req, res) {
+app.post('/versions', expressJoi(configSchema), function(req, res, next) {
 	let buildConfigurations = JSON.parse(fs.readFileSync(__dirname + "/eLink-build.json", "utf-8").toString());
 	let eLinkBuilds = buildConfigurations.eLinkBuilds;
 	try {
@@ -82,6 +93,8 @@ app.post('/versions', expressJoi(configSchema), function(req, res) {
 	}
 });
 
+app.use(errorHandler);
+
 var validateModule = function(eLinkBuilds, module) {
 	eLinkBuilds.forEach((build) => {
 		if(build.version === module.version) {
@@ -90,11 +103,13 @@ var validateModule = function(eLinkBuilds, module) {
 	});
 };
 
-app.use(function(err, req, res, next) {
-	if(err.isBoom) {
-		return res.status(err.output.statusCode).json(err.output.payload);
+function errorHandler (err, req, res, next) {
+	if (res.headersSent) {
+		return next(err);
 	}
-});
+	res.status(500);
+	res.send({ error: err });
+};
 
 /**
 * Node server initialization

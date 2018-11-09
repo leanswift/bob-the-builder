@@ -42,7 +42,8 @@ var cloneAndCheckout = function(module, requestId) {
                 return nodegit.Reset.reset(repo, commit, nodegit.Reset.TYPE.HARD,{checkoutStrategy: nodegit.Checkout.SAFE}, module.branch);
             })
             .catch(function(err) {
-                console.log(err.message);
+                console.error(err.message);
+                throw err;
             });
 };
 
