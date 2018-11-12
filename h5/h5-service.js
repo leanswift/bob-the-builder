@@ -1,5 +1,7 @@
 var fs = require('fs');
 var Q = require('q');
+var editJsonFile = require('edit-json-file');
+var zipdir = require('zip-dir');
 
 var gitService = require('./../common/git-service');
 var fileUtil = require('./../util/file-util');
@@ -72,8 +74,28 @@ var download = function(version, requestId, customizations) {
 
                     clonePromise.then(results => {
                         customizations.forEach((customization) => {
-                            // TODO apply customizations
+                            var indexOfConfig = getIndex(customization.key, build.parameters);
+                            if(indexOfConfig > -1) {
+                                configureValue(build.parameters[indexOfConfig], requestId, customization.value);
+                            } else {
+                                throw Error('The property ' + customization.key + ' is not configurable');
+                            }
                         });
+                    })
+                    .then((results) => {
+                        if(build.modules.length !== 1) {
+                            throw Error("H5 applications should contain just one and only one module");
+                        } else {
+                            var module = build.modules[0];
+                            var filePath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
+                            var saveFile = filePath + '.zip';
+                            zipdir(filePath, { saveTo: saveFile }, (err, data) => {
+                                if(err) {
+                                    throw err;
+                                }
+                                innerFulfilled(saveFile);
+                            });
+                        }
                     })
                     .catch(err => {
                         innerRejected(err);
@@ -83,6 +105,21 @@ var download = function(version, requestId, customizations) {
         });
     });
 };
+
+var getIndex = function(config, parameters) {
+    var keys = [];
+    parameters.forEach((item, index) => {
+        keys[index] = item.requestKey;
+    });
+    return keys.indexOf(config);
+}
+
+var configureValue = function(customization, requestId, value) {
+    var filePath = fileUtil.getRepositoryLocation() + requestId + '/' + customization.location + '/' + customization.fileName;
+    var editFile = editJsonFile(filePath);
+    editFile.set(customization.key, value);
+    editFile.save();
+}
 
 module.exports = {
     getVersions: getVersions,

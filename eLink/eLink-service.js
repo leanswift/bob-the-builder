@@ -7,6 +7,8 @@ var fileUtil = require('./../util/file-util');
 var gitService = require('./../common/git-service');
 var mavenService = require('../common/maven-service');
 
+var BUILD_FILE_PATH = __dirname + "/eLink-build.json";
+
 /**
  * Lists versions of elink available for download
  * 
@@ -14,7 +16,7 @@ var mavenService = require('../common/maven-service');
  */
 var getVersions = function() {
     return new Promise(function(fulfilled, rejected) {
-        fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
+        fs.readFile(BUILD_FILE_PATH, "utf-8", function(err, data) {
             if(err) {
                 rejected(err);
             }
@@ -36,7 +38,7 @@ var getVersions = function() {
  */
 var getCustomizables = function(version) {
     return new Promise(function(fulfilled, rejected) {
-        fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
+        fs.readFile(BUILD_FILE_PATH, "utf-8", function(err, data) {
             if(err) {
                 rejected(err);
             }
@@ -66,7 +68,7 @@ var getCustomizables = function(version) {
 var download = function(version, requestId, customizations) {
     fileUtil.clearRepository();
     return new Promise(function(fulfilled, rejected) {
-            fs.readFile(__dirname + "/eLink-build.json", "utf-8", function(err, data) {
+            fs.readFile(BUILD_FILE_PATH, "utf-8", function(err, data) {
                 if(err) {
                     rejected(err);
                 }

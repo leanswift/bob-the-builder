@@ -1,9 +1,10 @@
 var maven = require('maven');
-var appConfig = require('./../appconfig.json');
+
+var fileUtil = require('./../util/file-util');
 
 var runMavenBuild = function(repo, requestId) {
     var mvn = maven.create({
-		cwd: __dirname + '/..' + appConfig.clonePath + requestId + '/' + repo
+		cwd: fileUtil.getRepositoryLocation() + requestId + '/' + repo
 	});
 	return mvn.execute(['clean', 'install']);
 };
