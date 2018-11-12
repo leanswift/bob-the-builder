@@ -2,6 +2,10 @@ var fs = require('fs');
 var Q = require('q');
 var editJsonFile = require('edit-json-file');
 var zipdir = require('zip-dir');
+var readline = require('readline');
+var rimraf = require('rimraf');
+var glob  = require('glob');
+var tsc = require('typescript-compiler');
 
 var gitService = require('./../common/git-service');
 var fileUtil = require('./../util/file-util');
@@ -89,11 +93,17 @@ var download = function(version, requestId, customizations) {
                             var module = build.modules[0];
                             var filePath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
                             var saveFile = filePath + '.zip';
-                            zipdir(filePath, { saveTo: saveFile }, (err, data) => {
-                                if(err) {
-                                    throw err;
-                                }
-                                innerFulfilled(saveFile);
+                            runTypeScriptCompiler(module, requestId)
+                            .then((data) => {
+                                return removeIgnoredFiles(module, requestId);
+                            })
+                            .then((data) => {
+                                zipdir(filePath, { saveTo: saveFile }, (err, data) => {
+                                    if(err) {
+                                        throw err;
+                                    }
+                                    innerFulfilled(saveFile);
+                                });
                             });
                         }
                     })
@@ -112,14 +122,53 @@ var getIndex = function(config, parameters) {
         keys[index] = item.requestKey;
     });
     return keys.indexOf(config);
-}
+};
 
 var configureValue = function(customization, requestId, value) {
     var filePath = fileUtil.getRepositoryLocation() + requestId + '/' + customization.location + '/' + customization.fileName;
     var editFile = editJsonFile(filePath);
     editFile.set(customization.key, value);
     editFile.save();
-}
+};
+
+var runTypeScriptCompiler = function(module, requestId) {
+    var repositoryPath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
+    return new Promise((fulfilled, rejected) => {
+        glob(repositoryPath + '/scripts/**/*.ts', (err, matches) => {
+            if(err) {
+                rejected(err);
+            }
+            fulfilled(matches);
+        });
+    })
+    .then(matches => {
+        tsc.compile(matches, ['--out', repositoryPath + '/out.js']);
+    });
+};
+
+var removeIgnoredFiles = function(module, requestId) {
+    var repositoryPath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
+    return new Promise((fulfilled, rejected) => {
+        var ignoredFiles = [];
+        if(fs.existsSync(repositoryPath + '/.bobignore')) {
+            var r1 = readline.createInterface({
+                input: fs.createReadStream(repositoryPath + '/.bobignore'),
+                crlfDelay: Infinity
+            });
+            r1.on('line', line => {
+                ignoredFiles.push(line);
+            });
+        }
+        fulfilled(ignoredFiles);
+    })
+    .then(ignoredFiles => {
+        ignoredFiles.forEach(ignoredFile => {
+            if(fs.existsSync(ignoredFile)) {
+                rimraf.sync(ignoredFile);
+            }
+        });
+    });
+};
 
 module.exports = {
     getVersions: getVersions,
