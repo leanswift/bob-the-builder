@@ -5,7 +5,6 @@ var zipdir = require('zip-dir');
 var readline = require('readline');
 var rimraf = require('rimraf');
 var glob  = require('glob');
-var tsc = require('typescript-compiler');
 
 var gitService = require('./../common/git-service');
 var fileUtil = require('./../util/file-util');
@@ -65,7 +64,7 @@ var download = function(version, requestId, customizations) {
                 rejected(err);
             }
             fulfilled(data);
-        })
+        });
     })
     .then((data) => {
         return new Promise((innerFulfilled, innerRejected) => {
@@ -94,7 +93,10 @@ var download = function(version, requestId, customizations) {
                             var filePath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
                             var saveFile = filePath + '.zip';
                             runTypeScriptCompiler(module, requestId)
-                            .then((data) => {
+                            .then(() => {
+                                return runInitScripts(module, requestId);
+                            })
+                            .then(() => {
                                 return removeIgnoredFiles(module, requestId);
                             })
                             .then((data) => {
@@ -126,48 +128,132 @@ var getIndex = function(config, parameters) {
 
 var configureValue = function(customization, requestId, value) {
     var filePath = fileUtil.getRepositoryLocation() + requestId + '/' + customization.location + '/' + customization.fileName;
-    var editFile = editJsonFile(filePath);
-    editFile.set(customization.key, value);
-    editFile.save();
+    switch(customization.type) {
+        case 'json':
+            var editFile = editJsonFile(filePath);
+            editFile.set(customization.key, value);
+            editFile.save();
+            break;
+        case 'regex':
+            // TODO regex editing
+        default:
+            throw Error('Customization of type ' + customization.type + ' is not supported');
+    }
+    
 };
 
 var runTypeScriptCompiler = function(module, requestId) {
     var repositoryPath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
     return new Promise((fulfilled, rejected) => {
-        glob(repositoryPath + '/scripts/**/*.ts', (err, matches) => {
-            if(err) {
-                rejected(err);
+        var exec = require('child_process').exec;
+        console.log('Starting tsc on ' + repositoryPath);
+        exec('tsc --watch false -p ' + repositoryPath, (error, stdout, stderr) => {
+            console.log(stdout);
+            console.log(stderr);
+            if(error !== null) {
+                console.error(error);
             }
-            fulfilled(matches);
+            fulfilled();
         });
-    })
-    .then(matches => {
-        tsc.compile(matches, ['--out', repositoryPath + '/out.js']);
     });
 };
+
+var runInitScripts = function(module, requestId) {
+    var repositoryPath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
+    return new Promise((resolve, reject) => {
+        var bobInitPath = repositoryPath + '/.bobinit';
+        var bobInitPath = __dirname + '/.bobinit';
+        var input = null;
+        if(fs.existsSync(bobInitPath)) {
+            input = fs.createReadStream(bobInitPath);
+        } else {
+            input = fs.createReadStream(defaultBobInitPath)
+        }
+        var reader = readline.createInterface({
+            input: input,
+            crlfDelay: Infinity
+        });
+        reader.on('line', line => {
+            var scriptPath = repositoryPath + '/' + line;
+            if(fs.existsSync(scriptPath)) {
+                require(scriptPath);
+            }
+        });
+        input.on('end', () => {
+            resolve();
+        });
+    });
+}
 
 var removeIgnoredFiles = function(module, requestId) {
     var repositoryPath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
     return new Promise((fulfilled, rejected) => {
-        var ignoredFiles = [];
-        if(fs.existsSync(repositoryPath + '/.bobignore')) {
-            var r1 = readline.createInterface({
-                input: fs.createReadStream(repositoryPath + '/.bobignore'),
-                crlfDelay: Infinity
-            });
-            r1.on('line', line => {
-                ignoredFiles.push(line);
-            });
+        var ignoredExpressions = [];
+        var defaultBobIgnorePath = __dirname + '/.bobignore';
+        var bobIgnorePath = repositoryPath + '/.bobignore';
+        var input = null;
+        if(fs.existsSync(bobIgnorePath)) {
+            input = fs.createReadStream(bobIgnorePath);
+        } else {
+            input = fs.createReadStream(defaultBobIgnorePath);
         }
-        fulfilled(ignoredFiles);
+        var reader = readline.createInterface({
+            input: input,
+            crlfDelay: Infinity
+        });
+        reader.on('line', line => {
+            ignoredExpressions.push(line);
+        });
+        input.on('end', () => {
+            fulfilled(ignoredExpressions);
+        });
     })
-    .then(ignoredFiles => {
-        ignoredFiles.forEach(ignoredFile => {
-            if(fs.existsSync(ignoredFile)) {
-                rimraf.sync(ignoredFile);
+    .then(ignoredExpressions => {
+        return listFilePaths(module, ignoredExpressions, requestId)
+    })
+    .then((data) => {
+        var ignoredFiles = flatten(data);
+        ignoredFiles.forEach(file => {
+            if(fs.existsSync(file)) {
+                rimraf(file, (err) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                });
             }
         });
     });
+};
+
+var listFilePaths = function(module, expressions, requestId) {
+    var repositoryPath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
+    var promises = [];
+    expressions.forEach(expression => {
+        var promise = new Promise((resolve, reject) => {
+            glob(repositoryPath + '/' + expression, (err, res) => {
+                if(err) {
+                    reject(err);
+                }
+                resolve(res);
+            });
+        });
+        promises.push(promise);
+    });
+    return Promise.all(promises);
+};
+
+var flatten = function(arr) {
+    var array = [];
+    while(arr.length) {
+        var value = arr.shift();
+        if(Array.isArray(value)) {
+            // this line preserve the order
+            arr = value.concat(arr);
+        } else {
+            array.push(value);
+        }
+    }
+    return array;
 };
 
 module.exports = {

@@ -1,0 +1,8 @@
+scripts/**/*.ts
+.gitignore
+.git/**/*
+dev-base64-encode-decode.js
+dev-web-server.js
+dev-config.json
+package.json
+tsconfig.json
