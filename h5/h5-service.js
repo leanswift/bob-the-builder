@@ -161,6 +161,7 @@ var runTypeScriptCompiler = function(module, requestId) {
 var runInitScripts = function(module, requestId) {
     var repositoryPath = fileUtil.getRepositoryLocation() + requestId + '/' + module.repository;
     return new Promise((resolve, reject) => {
+        var scripts = [];
         var bobInitPath = repositoryPath + '/.bobinit';
         var bobInitPath = __dirname + '/.bobinit';
         var input = null;
@@ -176,12 +177,33 @@ var runInitScripts = function(module, requestId) {
         reader.on('line', line => {
             var scriptPath = repositoryPath + '/' + line;
             if(fs.existsSync(scriptPath)) {
-                require(scriptPath);
+                scripts.push(line);
             }
         });
         input.on('end', () => {
-            resolve();
+            resolve(scripts);
         });
+    })
+    .then((scripts) => {
+        var promises = [];
+        var exec = require('child_process').exec;
+        scripts.forEach(script => {
+            var promise = new Promise((resolve, reject) => {
+                // TODO move npm install to a separate promise so that it runs only once
+                exec('cd ' + repositoryPath + ' && npm install && node ' + script, (error, stdout, stderr) => {
+                    console.log('stdout: ' + stdout);
+                    console.log('stderr: ' + stderr);
+                    if(error !== null) {
+                        console.error(error);
+                        reject(error);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+            promises.push(promise);
+        });
+        return Promise.all(promises);
     });
 }
 
