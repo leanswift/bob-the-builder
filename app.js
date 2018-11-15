@@ -69,6 +69,7 @@ app.post('/:service/:version/download', function(req, res, next) {
 			});
 		})
 		.catch(function(err) {
+			console.error(err);
 			err = {
 				message: 'Build failed. Check the build file for requested build.',
 				originalError: err
