@@ -2,6 +2,7 @@ var fs = require('fs');
 var Q = require('q');
 var S = require('string');
 var prop = require('properties-parser');
+var editJsonFile = require('edit-json-file');
 
 var fileUtil = require('./../util/file-util');
 var gitService = require('./../common/git-service');
@@ -115,6 +116,26 @@ var download = function(version, requestId, customizations) {
         });
 };
 
+var addBuild = function(build) {
+    const buildFilePath = __dirname + "/eLink-build.json";
+    return new Promise((resolve, reject) => {
+        if(!fs.existsSync(buildFilePath)) {
+            reject(Error('eLink-build.json is missing'));
+        }
+        try {
+            buildJson = editJsonFile(buildFilePath);
+            let eLinkBuilds = buildJson.get('eLinkBuilds');
+            validateModule(eLinkBuilds, build);
+            eLinkBuilds[eLinkBuilds.length] = build;
+            buildJson.set('eLinkBuilds', eLinkBuilds);
+            buildJson.save();
+            resolve();
+        } catch(err) {
+            reject(err);
+        }
+    });
+};
+
 /**
 * Gets the index of customizable for a given customizable key
 */
@@ -167,8 +188,17 @@ var getWarPath = function(moduleName, requestId) {
 	return filePath;
 };
 
+var validateModule = function(eLinkBuilds, module) {
+	eLinkBuilds.forEach((build) => {
+		if(build.version === module.version) {
+			throw new Error('Build already exists in eLink-build.json');
+		}
+	});
+};
+
 module.exports = {
     getVersions: getVersions,
     getCustomizables: getCustomizables,
-    download: download
+    download: download,
+    addBuild: addBuild
 };

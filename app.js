@@ -2,7 +2,6 @@ var express = require('express');
 var cors = require('cors');
 var app = express();
 var bodyParser = require('body-parser');
-var fs = require('fs');
 var uniqid = require('uniqid');
 var Joi = require('joi');
 var expressJoi = require('express-joi-validator');
@@ -24,15 +23,14 @@ app.use(function (req, res, next) {
 	next();
 });
 app.use(cors());
-// app.use(errorHandler);
 
 /**
-* Service to get list of versions of eLink which can be downloaded
+* Service to get list of versions of the project which can be downloaded
 */
-app.get('/:service/versions', function(req, res, next) {
+app.get('/:project/versions', function(req, res, next) {
 	var response = {};
-	var service = serviceMapper.resolveService(req.params.service);
-	service.getVersions().then((result) => {
+	var project = serviceMapper.resolveService(req.params.project);
+	project.getVersions().then((result) => {
 		response.versions = result;
 		res.end(JSON.stringify(response));
 	})
@@ -42,12 +40,12 @@ app.get('/:service/versions', function(req, res, next) {
 });
 
 /**
-* Service to get list of customizables for selected version of eLink
+* Service to get list of customizables for selected version of the project
 */
-app.get('/:service/:version/customizables', function(req, res, next) {
+app.get('/:project/:version/customizables', function(req, res, next) {
 	var response = {};
-	var service = serviceMapper.resolveService(req.params.service);
-	service.getCustomizables(req.params.version).then(function(result) {
+	var project = serviceMapper.resolveService(req.params.project);
+	project.getCustomizables(req.params.version).then(function(result) {
 		response.customizables = result;
 		res.end(JSON.stringify(response));
 	})
@@ -57,12 +55,12 @@ app.get('/:service/:version/customizables', function(req, res, next) {
 });
 
 /**
-* Service to download a given version of eLink
+* Service to download a given version of the project
 */
-app.post('/:service/:version/download', function(req, res, next) {
+app.post('/:project/:version/download', function(req, res, next) {
 	var requestId = uniqid();
-	var service = serviceMapper.resolveService(req.params.service);
-	service.download(req.params.version, requestId, req.body.configurations)
+	var project = serviceMapper.resolveService(req.params.project);
+	project.download(req.params.version, requestId, req.body.configurations)
 		.then(function(result) {
 			res.download(result, null, (err) => {
 				fileUtil.clearRepository(requestId);
@@ -79,30 +77,20 @@ app.post('/:service/:version/download', function(req, res, next) {
 		});
 });
 
-app.post('/versions', expressJoi(configSchema), function(req, res, next) {
-	let buildConfigurations = JSON.parse(fs.readFileSync(__dirname + "/eLink-build.json", "utf-8").toString());
-	let eLinkBuilds = buildConfigurations.eLinkBuilds;
-	try {
-		validateModule(eLinkBuilds, req.body);
-		eLinkBuilds[eLinkBuilds.length] = req.body;
-		fs.writeFile(__dirname + "/eLink-build.json", JSON.stringify({ eLinkBuilds: eLinkBuilds }));
-		res.status(200).send({
-			message: "Added new configuration"
+app.post('/:project/versions', expressJoi(configSchema), function(req, res, next) {
+	var project = serviceMapper.resolveService(req.params.project);
+	project.addBuild(req.body)
+		.then(() => {
+			res.status(200).send({
+				message: "Added new configuration"
+			});
+		})
+		.catch((err) => {
+			res.status(400).send({ message: err.message });
 		});
-	} catch (err) {
-		res.status(400).send({ message: err.message });
-	}
 });
 
 app.use(errorHandler);
-
-var validateModule = function(eLinkBuilds, module) {
-	eLinkBuilds.forEach((build) => {
-		if(build.version === module.version) {
-			throw new Error('Build already exists in eLink-build.json');
-		}
-	});
-};
 
 function errorHandler (err, req, res, next) {
 	if (res.headersSent) {

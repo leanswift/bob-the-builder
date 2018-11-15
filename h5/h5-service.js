@@ -118,6 +118,26 @@ var download = function(version, requestId, customizations) {
     });
 };
 
+var addBuild = function(build) {
+    const buildFilePath = __dirname + "/h5-build.json";
+    return new Promise((resolve, reject) => {
+        if(!fs.existsSync(buildFilePath)) {
+            reject(Error('h5-build.json does not exist'));
+        }
+        try {
+            buildJson = editJsonFile(buildFilePath);
+            let h5Builds = buildJson.get('h5Builds');
+            validateModule(h5Builds, build);
+            h5Builds[h5Builds.length] = build;
+            buildJson.set('h5Builds', h5Builds);
+            buildJson.save();
+            resolve();
+        } catch(err) {
+            reject(err);
+        }
+    });
+};
+
 var getIndex = function(config, parameters) {
     var keys = [];
     parameters.forEach((item, index) => {
@@ -264,6 +284,14 @@ var listFilePaths = function(module, expressions, requestId) {
     return Promise.all(promises);
 };
 
+var validateModule = function(h5Builds, module) {
+	h5Builds.forEach((build) => {
+		if(build.version === module.version) {
+			throw new Error('Build already exists in h5-build.json');
+		}
+	});
+};
+
 var flatten = function(arr) {
     var array = [];
     while(arr.length) {
@@ -281,5 +309,6 @@ var flatten = function(arr) {
 module.exports = {
     getVersions: getVersions,
     getCustomizables: getCustomizables,
-    download: download
+    download: download,
+    addBuild: addBuild
 };

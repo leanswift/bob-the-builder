@@ -18,6 +18,9 @@ var verifyService = function(service) {
     if(typeof service.download !== 'function') {
         throw Error("download() is not implemented in " + service);
     }
+    if(typeof service.addBuild !== 'function') {
+        throw Error("addBuild() is not implemented in " + service);
+    }
 };
 
 var serviceMap = {
