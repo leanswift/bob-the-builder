@@ -48,6 +48,8 @@ var getCustomizables = version => {
                     customizables[index] = {};
                     customizables[index].name = item.name;
                     customizables[index].key = item.requestKey;
+                    customizables[index].defaultValue = item.defaultValue;
+                    customizables[index].mandatory = item.mandatory;
                 });
             }
         });

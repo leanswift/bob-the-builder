@@ -1,25 +1,694 @@
 {
-    "h5Builds": [
-        {
-            "version": "ar-webapp-7.0.0",
-            "modules": [
-                {
-                    "name": "h5-webapp-ar",
-                    "version": "7.0.0",
-                    "repository": "h5-webapp-ar",
-                    "tag": "v7.0.0"
-                }
-            ],
-            "parameters": [
-                {
-                    "name": "Environment",
-                    "requestKey": "environment",
-                    "type": "json",
-                    "key": "environment",
-                    "fileName": "dev-config.json",
-                    "location": "h5-webapp-ar/"
-                }
-            ]
-        }
-    ]
+  "h5Builds": [
+      {
+          "version": "Base Webapp v4.0.0",
+          "modules": [
+              {
+                  "name": "h5-webapp-base",
+                  "version": "4.0.0",
+                  "repository": "h5-webapp-base",
+                  "tag": "v4.0.0"
+              }
+          ],
+          "parameters": [
+              {
+                  "name": "Environment",
+                  "requestKey": "environment",
+                  "type": "json",
+                  "key": "environment",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":"DEV",
+                  "mandatory":true
+              },
+              {
+                  "name": "Default Language",
+                  "requestKey": "defaultLanguage",
+                  "type": "json",
+                  "key": "defaultLanguage",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":"en-US",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Theme Id",
+                  "requestKey": "defaultThemeId",
+                  "type": "json",
+                  "key": "defaultThemeId",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":"1",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Wallpaper Id",
+                  "requestKey": "defaultTextureId",
+                  "type": "json",
+                  "key": "defaultTextureId",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":"1",
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Theme Selection",
+                  "requestKey": "showThemeSelection",
+                  "type": "json",
+                  "key": "showThemeSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Wallpaper Selection",
+                  "requestKey": "showWallpaperSelection",
+                  "type": "json",
+                  "key": "showWallpaperSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Language Selection",
+                  "requestKey": "showLanguageSelection",
+                  "type": "json",
+                  "key": "showLanguageSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Exclude Themes",
+                  "requestKey": "excludeThemes",
+                  "type": "json",
+                  "key": "excludeThemes",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Wallpapers",
+                  "requestKey": "excludeWallpapers",
+                  "type": "json",
+                  "key": "excludeWallpapers",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Languages",
+                  "requestKey": "excludeLanguages",
+                  "type": "json",
+                  "key": "excludeLanguages",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Modules",
+                  "requestKey": "excludeModules",
+                  "type": "json",
+                  "key": "excludeModules",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":[],
+                  "mandatory":false
+              },
+              {
+                  "name": "Search Query",
+                  "requestKey": "AppConfigSearchQuery",
+                  "type": "json",
+                  "key": "appConfig.searchQuery",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":{},
+                  "mandatory":false
+              },
+              {
+                  "name": "Enable M3 Authority",
+                  "requestKey": "AppConfigEnableM3Authority",
+                  "type": "json",
+                  "key": "appConfig.enableM3Authority",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":false,
+                  "mandatory":false
+              },
+              {
+                  "name": "Date Format",
+                  "requestKey": "AppConfigGlobalDateFormat",
+                  "type": "json",
+                  "key": "appConfig.globalDateFormat",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-base",
+                  "defaultValue":"MM/dd/yy",
+                  "mandatory":false
+              }
+          ]
+      },
+      {
+          "version": "Accounts Receivable Webapp v7.0.0",
+          "modules": [
+              {
+                  "name": "h5-webapp-ar",
+                  "version": "7.0.0",
+                  "repository": "h5-webapp-ar",
+                  "tag": "v7.0.0"
+              }
+          ],
+          "parameters": [
+              {
+                  "name": "Environment",
+                  "requestKey": "environment",
+                  "type": "json",
+                  "key": "environment",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":"DEV",
+                  "mandatory":true
+              },
+              {
+                  "name": "Infor ION API URL",
+                  "requestKey": "IONAPIURL",
+                  "type": "json",
+                  "key": "inforIONAPI.URL",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":"https://<HostName>/InforIntSTS",
+                  "mandatory":false
+              },
+              {
+                  "name": "ION API Username",
+                  "requestKey": "IONAPIUsername",
+                  "type": "json",
+                  "key": "inforIONAPI.username",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":null,
+                  "mandatory":false
+              },
+              {
+                  "name": "ION API Password",
+                  "requestKey": "IONAPIPassword",
+                  "type": "json",
+                  "key": "inforIONAPI.password",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":null,
+                  "mandatory":false
+              },
+              {
+                  "name": "ION API ClientID",
+                  "requestKey": "IONAPIClientID",
+                  "type": "json",
+                  "key": "inforIONAPI.client_id",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":null,
+                  "mandatory":false
+              },
+              {
+                  "name": "ION API Client Secret",
+                  "requestKey": "IONAPIClientSecret",
+                  "type": "json",
+                  "key": "inforIONAPI.client_secret",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":null,
+                  "mandatory":false
+              },
+              {
+                  "name": "NAME",
+                  "requestKey": "IDMAPIURL",
+                  "type": "json",
+                  "key": "inforIDMAPI.URL",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":"https://<HostName>:7443/infor/IDM/api",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Language",
+                  "requestKey": "defaultLanguage",
+                  "type": "json",
+                  "key": "defaultLanguage",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":"en-US",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Theme Id",
+                  "requestKey": "defaultThemeId",
+                  "type": "json",
+                  "key": "defaultThemeId",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":"1",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Wallpaper Id",
+                  "requestKey": "defaultTextureId",
+                  "type": "json",
+                  "key": "defaultTextureId",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":"1",
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Theme Selection",
+                  "requestKey": "showThemeSelection",
+                  "type": "json",
+                  "key": "showThemeSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Wallpaper Selection",
+                  "requestKey": "showWallpaperSelection",
+                  "type": "json",
+                  "key": "showWallpaperSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Language Selection",
+                  "requestKey": "showLanguageSelection",
+                  "type": "json",
+                  "key": "showLanguageSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Exclude Themes",
+                  "requestKey": "excludeThemes",
+                  "type": "json",
+                  "key": "excludeThemes",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Wallpapers",
+                  "requestKey": "excludeWallpapers",
+                  "type": "json",
+                  "key": "excludeWallpapers",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Languages",
+                  "requestKey": "excludeLanguages",
+                  "type": "json",
+                  "key": "excludeLanguages",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Modules",
+                  "requestKey": "excludeModules",
+                  "type": "json",
+                  "key": "excludeModules",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":[],
+                  "mandatory":false
+              },
+              {
+                  "name": "Search Query",
+                  "requestKey": "AppConfigSearchQuery",
+                  "type": "json",
+                  "key": "appConfig.searchQuery",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":{},
+                  "mandatory":false
+              },
+              {
+                  "name": "Enable M3 Authority",
+                  "requestKey": "AppConfigEnableM3Authority",
+                  "type": "json",
+                  "key": "appConfig.enableM3Authority",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":false,
+                  "mandatory":false
+              },
+              {
+                  "name": "Date Format",
+                  "requestKey": "AppConfigGlobalDateFormat",
+                  "type": "json",
+                  "key": "appConfig.globalDateFormat",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-ar",
+                  "defaultValue":"MM/dd/yy",
+                  "mandatory":false
+              }
+          ]
+      },
+      {
+          "version": "Item Maintenance Webapp v4.0.0",
+          "modules": [
+              {
+                  "name": "h5-webapp-item-maintenance",
+                  "version": "4.0.0",
+                  "repository": "h5-webapp-item-maintenance",
+                  "tag": "v4.0.0"
+              }
+          ],
+          "parameters": [
+              {
+                  "name": "Environment",
+                  "requestKey": "environment",
+                  "type": "json",
+                  "key": "environment",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":"DEV",
+                  "mandatory":true
+              },
+              {
+                  "name": "Default Language",
+                  "requestKey": "defaultLanguage",
+                  "type": "json",
+                  "key": "defaultLanguage",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":"en-US",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Theme Id",
+                  "requestKey": "defaultThemeId",
+                  "type": "json",
+                  "key": "defaultThemeId",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":"1",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Wallpaper Id",
+                  "requestKey": "defaultTextureId",
+                  "type": "json",
+                  "key": "defaultTextureId",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":"1",
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Theme Selection",
+                  "requestKey": "showThemeSelection",
+                  "type": "json",
+                  "key": "showThemeSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Wallpaper Selection",
+                  "requestKey": "showWallpaperSelection",
+                  "type": "json",
+                  "key": "showWallpaperSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Language Selection",
+                  "requestKey": "showLanguageSelection",
+                  "type": "json",
+                  "key": "showLanguageSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Exclude Themes",
+                  "requestKey": "excludeThemes",
+                  "type": "json",
+                  "key": "excludeThemes",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Wallpapers",
+                  "requestKey": "excludeWallpapers",
+                  "type": "json",
+                  "key": "excludeWallpapers",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Languages",
+                  "requestKey": "excludeLanguages",
+                  "type": "json",
+                  "key": "excludeLanguages",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Modules",
+                  "requestKey": "excludeModules",
+                  "type": "json",
+                  "key": "excludeModules",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":[],
+                  "mandatory":false
+              },
+              {
+                  "name": "Search Query",
+                  "requestKey": "AppConfigSearchQuery",
+                  "type": "json",
+                  "key": "appConfig.searchQuery",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":{},
+                  "mandatory":false
+              },
+              {
+                  "name": "Enable M3 Authority",
+                  "requestKey": "AppConfigEnableM3Authority",
+                  "type": "json",
+                  "key": "appConfig.m3Authority",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":false,
+                  "mandatory":false
+              },
+              {
+                  "name": "Date Format",
+                  "requestKey": "AppConfigGlobalDateFormat",
+                  "type": "json",
+                  "key": "appConfig.globalDateFormat",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":"MM/dd/yy",
+                  "mandatory":false
+              },
+              {
+                  "name": "Enable M3 Authority",
+                  "requestKey": "AppConfigEnableM3Authority",
+                  "type": "json",
+                  "key": "appConfig.m3Authority",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":false,
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Supplier",
+                  "requestKey": "AppConfigDefaultSupplier",
+                  "type": "json",
+                  "key": "appConfig.defaultSupplier",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":null,
+                  "mandatory":false
+              },
+              {
+                  "name": "Costing Decimal Places",
+                  "requestKey": "AppConfigCostingDecimalPlaces",
+                  "type": "json",
+                  "key": "appConfig.costingDecimalPlaces",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-item-maintenance",
+                  "defaultValue":"4",
+                  "mandatory":false
+              }
+          ]
+      },
+      {
+          "version": "MO Planning - Custom Webapp v1.0.0",
+          "modules": [
+              {
+                  "name": "h5-webapp-custom",
+                  "version": "1.0.0",
+                  "repository": "h5-webapp-custom",
+                  "branch": "elitespice/h5-webapp-mo-planning"
+              }
+          ],
+          "parameters": [
+              {
+                  "name": "Environment",
+                  "requestKey": "environment",
+                  "type": "json",
+                  "key": "environment",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":"DEV",
+                  "mandatory":true
+              },
+              {
+                  "name": "Default Language",
+                  "requestKey": "defaultLanguage",
+                  "type": "json",
+                  "key": "defaultLanguage",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":"en-US",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Theme Id",
+                  "requestKey": "defaultThemeId",
+                  "type": "json",
+                  "key": "defaultThemeId",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":"1",
+                  "mandatory":false
+              },
+              {
+                  "name": "Default Wallpaper Id",
+                  "requestKey": "defaultTextureId",
+                  "type": "json",
+                  "key": "defaultTextureId",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":"1",
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Theme Selection",
+                  "requestKey": "showThemeSelection",
+                  "type": "json",
+                  "key": "showThemeSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Wallpaper Selection",
+                  "requestKey": "showWallpaperSelection",
+                  "type": "json",
+                  "key": "showWallpaperSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Show Language Selection",
+                  "requestKey": "showLanguageSelection",
+                  "type": "json",
+                  "key": "showLanguageSelection",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":true,
+                  "mandatory":false
+              },
+              {
+                  "name": "Exclude Themes",
+                  "requestKey": "excludeThemes",
+                  "type": "json",
+                  "key": "excludeThemes",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Wallpapers",
+                  "requestKey": "excludeWallpapers",
+                  "type": "json",
+                  "key": "excludeWallpapers",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Languages",
+                  "requestKey": "excludeLanguages",
+                  "type": "json",
+                  "key": "excludeLanguages",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":[],
+                  "mandatory":false
+              },{
+                  "name": "Exclude Modules",
+                  "requestKey": "excludeModules",
+                  "type": "json",
+                  "key": "excludeModules",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":[],
+                  "mandatory":false
+              },
+              {
+                  "name": "Search Query",
+                  "requestKey": "AppConfigSearchQuery",
+                  "type": "json",
+                  "key": "appConfig.searchQuery",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":{},
+                  "mandatory":false
+              },
+              {
+                  "name": "Enable M3 Authority",
+                  "requestKey": "AppConfigEnableM3Authority",
+                  "type": "json",
+                  "key": "appConfig.enableM3Authority",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":false,
+                  "mandatory":false
+              },
+              {
+                  "name": "Date Format",
+                  "requestKey": "AppConfigGlobalDateFormat",
+                  "type": "json",
+                  "key": "appConfig.globalDateFormat",
+                  "fileName": "dev-config.json",
+                  "location": "h5-webapp-custom",
+                  "defaultValue":"MM/dd/yy",
+                  "mandatory":false
+              }
+          ]
+      }
+  ]
 }
