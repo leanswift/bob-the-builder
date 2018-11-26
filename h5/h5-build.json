@@ -82,53 +82,6 @@
                   "mandatory":false
               },
               {
-                  "name": "Exclude Themes",
-                  "requestKey": "excludeThemes",
-                  "type": "json",
-                  "key": "excludeThemes",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-base",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Wallpapers",
-                  "requestKey": "excludeWallpapers",
-                  "type": "json",
-                  "key": "excludeWallpapers",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-base",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Languages",
-                  "requestKey": "excludeLanguages",
-                  "type": "json",
-                  "key": "excludeLanguages",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-base",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Modules",
-                  "requestKey": "excludeModules",
-                  "type": "json",
-                  "key": "excludeModules",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-base",
-                  "defaultValue":[],
-                  "mandatory":false
-              },
-              {
-                  "name": "Search Query",
-                  "requestKey": "AppConfigSearchQuery",
-                  "type": "json",
-                  "key": "appConfig.searchQuery",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-base",
-                  "defaultValue":{},
-                  "mandatory":false
-              },
-              {
                   "name": "Enable M3 Authority",
                   "requestKey": "AppConfigEnableM3Authority",
                   "type": "json",
@@ -292,53 +245,6 @@
                   "mandatory":false
               },
               {
-                  "name": "Exclude Themes",
-                  "requestKey": "excludeThemes",
-                  "type": "json",
-                  "key": "excludeThemes",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-ar",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Wallpapers",
-                  "requestKey": "excludeWallpapers",
-                  "type": "json",
-                  "key": "excludeWallpapers",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-ar",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Languages",
-                  "requestKey": "excludeLanguages",
-                  "type": "json",
-                  "key": "excludeLanguages",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-ar",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Modules",
-                  "requestKey": "excludeModules",
-                  "type": "json",
-                  "key": "excludeModules",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-ar",
-                  "defaultValue":[],
-                  "mandatory":false
-              },
-              {
-                  "name": "Search Query",
-                  "requestKey": "AppConfigSearchQuery",
-                  "type": "json",
-                  "key": "appConfig.searchQuery",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-ar",
-                  "defaultValue":{},
-                  "mandatory":false
-              },
-              {
                   "name": "Enable M3 Authority",
                   "requestKey": "AppConfigEnableM3Authority",
                   "type": "json",
@@ -439,53 +345,6 @@
                   "fileName": "dev-config.json",
                   "location": "h5-webapp-item-maintenance",
                   "defaultValue":true,
-                  "mandatory":false
-              },
-              {
-                  "name": "Exclude Themes",
-                  "requestKey": "excludeThemes",
-                  "type": "json",
-                  "key": "excludeThemes",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-item-maintenance",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Wallpapers",
-                  "requestKey": "excludeWallpapers",
-                  "type": "json",
-                  "key": "excludeWallpapers",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-item-maintenance",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Languages",
-                  "requestKey": "excludeLanguages",
-                  "type": "json",
-                  "key": "excludeLanguages",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-item-maintenance",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Modules",
-                  "requestKey": "excludeModules",
-                  "type": "json",
-                  "key": "excludeModules",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-item-maintenance",
-                  "defaultValue":[],
-                  "mandatory":false
-              },
-              {
-                  "name": "Search Query",
-                  "requestKey": "AppConfigSearchQuery",
-                  "type": "json",
-                  "key": "appConfig.searchQuery",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-item-maintenance",
-                  "defaultValue":{},
                   "mandatory":false
               },
               {
@@ -619,53 +478,6 @@
                   "fileName": "dev-config.json",
                   "location": "h5-webapp-custom",
                   "defaultValue":true,
-                  "mandatory":false
-              },
-              {
-                  "name": "Exclude Themes",
-                  "requestKey": "excludeThemes",
-                  "type": "json",
-                  "key": "excludeThemes",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-custom",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Wallpapers",
-                  "requestKey": "excludeWallpapers",
-                  "type": "json",
-                  "key": "excludeWallpapers",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-custom",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Languages",
-                  "requestKey": "excludeLanguages",
-                  "type": "json",
-                  "key": "excludeLanguages",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-custom",
-                  "defaultValue":[],
-                  "mandatory":false
-              },{
-                  "name": "Exclude Modules",
-                  "requestKey": "excludeModules",
-                  "type": "json",
-                  "key": "excludeModules",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-custom",
-                  "defaultValue":[],
-                  "mandatory":false
-              },
-              {
-                  "name": "Search Query",
-                  "requestKey": "AppConfigSearchQuery",
-                  "type": "json",
-                  "key": "appConfig.searchQuery",
-                  "fileName": "dev-config.json",
-                  "location": "h5-webapp-custom",
-                  "defaultValue":{},
                   "mandatory":false
               },
               {
