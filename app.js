@@ -90,6 +90,30 @@ app.post('/:project/versions', expressJoi(configSchema), function(req, res, next
 		});
 });
 
+app.get('/:project/:version/moduleforversion', function(req, res, next) {
+	var response = {};
+	var project = serviceMapper.resolveService(req.params.project);
+	project.getModuleForVersion(req.params.version).then(function (result) {
+		response.modules = result;
+		res.end(JSON.stringify(response));
+	})
+	.catch(function(err) {
+		next(err);
+	});
+});
+
+app.post('/:project/:version/removeversion', function(req, res, next) {
+	var response = {};
+	var project = serviceMapper.resolveService(req.params.project);
+	project.removeVersion(req.params.version).then(function (result) {
+		response.versions = result;
+		res.end(JSON.stringify(response));
+	})
+	.catch(function (err) {
+		next(err);
+	})
+});
+
 app.use(errorHandler);
 
 function errorHandler (err, req, res, next) {

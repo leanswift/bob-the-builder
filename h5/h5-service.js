@@ -57,6 +57,60 @@ var getCustomizables = version => {
     });
 };
 
+var getModuleForVersion = version => {
+    return new Promise((fulfilled, rejected) => {
+        fs.readFile(BUILD_FILE_PATH, 'utf-8', (err, data) => {
+            if (err) {
+                rejected(err);
+            }
+            fulfilled(data);
+        });
+    })
+    .then(data => {
+        var modules = [];
+        var json = JSON.parse(data);
+        json.h5Builds.forEach(function(item, index) {
+            if (item.version == version) {
+                item.modules.forEach(function(item, index) {
+                    modules[index] = {};
+                    modules[index].name = item.name;
+                    modules[index].version = item.version;
+                    modules[index].repository = item.repository;
+                    modules[index].tag = item.tag;
+                });
+            }   
+        });
+        return modules;
+    });
+}
+
+var removeVersion = version => {
+    const buildFilePath = __dirname + "/h5-build.json";
+    return new Promise((fulfilled, rejected) => {
+        fs.readFile(BUILD_FILE_PATH, 'utf-8', (err, data) => {
+            if (err) {
+                rejected(err);
+            }
+            fulfilled(data);
+        });
+    })
+    .then(data => {
+        buildJson = editJsonFile(buildFilePath);
+        let versions = buildJson.get('h5Builds.version');
+        versions.forEach(function(item, index) {
+            try {
+                if (item == version) {
+                    buildJson.unset('h5Builds.version', version);
+                    buildJson.save();
+                    resolve();
+                }
+            } catch (error) {
+                reject(err);
+            }
+        });
+    });
+}
+
 var download = function(version, requestId, customizations) {
     fileUtil.clearRepository(requestId);
 
@@ -312,5 +366,7 @@ module.exports = {
     getVersions: getVersions,
     getCustomizables: getCustomizables,
     download: download,
-    addBuild: addBuild
+    addBuild: addBuild,
+    getModuleForVersion: getModuleForVersion,
+    removeVersion: removeVersion
 };
