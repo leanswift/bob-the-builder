@@ -5,6 +5,7 @@ var zipdir = require('zip-dir');
 var readline = require('readline');
 var rimraf = require('rimraf');
 var glob  = require('glob');
+var cleanDeep = require('clean-deep');
 
 var gitService = require('./../common/git-service');
 var fileUtil = require('./../util/file-util');
@@ -23,9 +24,15 @@ var getVersions = () => {
     .then((data) => {
         var versions = [];
         var json = JSON.parse(data);
-        json.h5Builds.forEach(element => {
-            versions.push(element.version);
-        });
+        if (Object.keys(json).length === 0 && json.constructor === Object) {
+            return;
+        } else {
+            json.h5Builds.forEach(element => {
+                if (element !== null) {
+                    versions.push(element.version);   
+                }
+            });
+        }
         return versions;
     });
 };
@@ -85,7 +92,6 @@ var getModuleForVersion = version => {
 }
 
 var removeVersion = version => {
-    const buildFilePath = __dirname + "/h5-build.json";
     return new Promise((fulfilled, rejected) => {
         fs.readFile(BUILD_FILE_PATH, 'utf-8', (err, data) => {
             if (err) {
@@ -95,17 +101,20 @@ var removeVersion = version => {
         });
     })
     .then(data => {
-        buildJson = editJsonFile(buildFilePath);
-        let versions = buildJson.get('h5Builds.version');
-        versions.forEach(function(item, index) {
+        return new Promise((innerFulfilled, innerRejected) => {
             try {
-                if (item == version) {
-                    buildJson.unset('h5Builds.version', version);
-                    buildJson.save();
-                    resolve();
-                }
+                var json = JSON.parse(data);                
+                json.h5Builds.forEach(function(item, index) {
+                    if(item.version === version) {
+                        delete json.h5Builds[index];
+                    }
+                });
+                fs.writeFile(BUILD_FILE_PATH, JSON.stringify(cleanDeep(json)), function(err) {
+                    if(err) throw err;
+                });   
+                innerFulfilled();
             } catch (error) {
-                reject(err);
+                innerRejected(error);
             }
         });
     });

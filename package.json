@@ -20,7 +20,8 @@
     "typescript-compiler": "^1.4.1-2",
     "uniqid": "^4.1.1",
     "xml2js": "^0.4.17",
-    "zip-dir": "^1.0.2"
+    "zip-dir": "^1.0.2",
+    "clean-deep": "3.0.2"
   },
   "devDependencies": {},
   "scripts": {

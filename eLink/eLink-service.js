@@ -3,6 +3,7 @@ var Q = require('q');
 var S = require('string');
 var prop = require('properties-parser');
 var editJsonFile = require('edit-json-file');
+var cleanDeep = require('clean-deep');
 
 var fileUtil = require('./../util/file-util');
 var gitService = require('./../common/git-service');
@@ -23,10 +24,13 @@ var getVersions = function() {
             }
             var json = JSON.parse(data);
             var versions = [];
-            json.eLinkBuilds.forEach(function(item, index) {
-                versions[index] = item.version;
-            });
-            
+            if (Object.keys(json).length === 0 && json.constructor === Object) {
+                return;
+            } else {
+                json.eLinkBuilds.forEach(function(item, index) {
+                    versions[index] = item.version;
+                });
+            }
             fulfilled(versions);
         });
     });
@@ -58,6 +62,35 @@ var getCustomizables = function(version) {
         });
     });
 };
+
+var removeVersion = version => {
+    return new Promise((fulfilled, rejected) => {
+        fs.readFile(BUILD_FILE_PATH, "utf-8", function(err, data) {
+            if(err) {
+                rejected(err);
+            }
+            fulfilled(data);
+        })
+    })
+    .then(data => {
+        return new Promise((innerFulfilled, innerRejected) => {
+            try {
+                var json = JSON.parse(data);
+                json.eLinkBuilds.forEach(function(item, index) {
+                    if(item.version === version) {
+                        delete json.eLinkBuilds[index];
+                    }
+                });
+                fs.writeFile(BUILD_FILE_PATH, JSON.stringify(cleanDeep(json)), function(err) {
+                    if(err) throw err;
+                });   
+                innerFulfilled();
+            } catch (error) {
+                innerRejected(error);
+            }
+        });
+    });
+}
 
 /**
  * Returns a file which is the result of applying the customizations
@@ -200,5 +233,6 @@ module.exports = {
     getVersions: getVersions,
     getCustomizables: getCustomizables,
     download: download,
-    addBuild: addBuild
+    addBuild: addBuild,
+    removeVersion: removeVersion
 };
