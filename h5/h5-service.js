@@ -64,7 +64,7 @@ var getCustomizables = version => {
     });
 };
 
-var getModuleForVersion = version => {
+var getBuildConfiguration = version => {
     return new Promise((fulfilled, rejected) => {
         fs.readFile(BUILD_FILE_PATH, 'utf-8', (err, data) => {
             if (err) {
@@ -74,20 +74,17 @@ var getModuleForVersion = version => {
         });
     })
     .then(data => {
-        var modules = [];
+        var buildConfiguration = {
+            modules: [],
+            configurations: []
+        };
         var json = JSON.parse(data);
         json.h5Builds.forEach(function(item, index) {
             if (item.version == version) {
-                item.modules.forEach(function(item, index) {
-                    modules[index] = {};
-                    modules[index].name = item.name;
-                    modules[index].version = item.version;
-                    modules[index].repository = item.repository;
-                    modules[index].tag = item.tag;
-                });
+                buildConfiguration = item
             }   
         });
-        return modules;
+        return buildConfiguration;
     });
 }
 
@@ -202,6 +199,36 @@ var addBuild = function(build) {
         }
     });
 };
+
+var updateBuild = function(version, build) {
+    const buildFilePath = __dirname + "/h5-build.json";
+    return new Promise((resolve, reject) => {
+        if(!fs.existsSync(buildFilePath)) {
+            reject(Error('h5-build.json does not exist'));
+        }
+        try {
+            let updated = false;
+            buildJson = editJsonFile(buildFilePath);
+            let h5Builds = buildJson.get('h5Builds');
+            h5Builds.forEach((h5Build, index) => {
+                if(h5Build.version === version) {
+                    h5Builds[index].modules = build.modules;
+                    h5Builds[index].parameters = build.parameters;
+                    buildJson.set('h5Builds', h5Builds);
+                    updated = true
+                }
+            })
+            buildJson.save();
+            if(updated) {
+                resolve();
+            } else {
+                reject(Error('Build not found in h5-build.json'))
+            }
+        } catch(err) {
+            reject(err);
+        }
+    });
+}
 
 var getIndex = function(config, parameters) {
     var keys = [];
@@ -376,6 +403,7 @@ module.exports = {
     getCustomizables: getCustomizables,
     download: download,
     addBuild: addBuild,
-    getModuleForVersion: getModuleForVersion,
+    getBuildConfiguration: getBuildConfiguration,
+    updateBuild: updateBuild,
     removeVersion: removeVersion
 };

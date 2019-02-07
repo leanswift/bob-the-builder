@@ -21,6 +21,9 @@ var verifyService = function(service) {
     if(typeof service.addBuild !== 'function') {
         throw Error("addBuild() is not implemented in " + service);
     }
+    // if(typeof service.getBuildConfiguration !== 'function') {
+    //     throw Error("getBuildConfiguration() is not implemented in " + service)
+    // }
 };
 
 var serviceMap = {
