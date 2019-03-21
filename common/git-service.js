@@ -14,15 +14,24 @@ var cloneAndCheckout = function(module, requestId) {
             }
         }
     };
-    
-    if(typeof module.branch != 'undefined' && module.branch !== null) {
-        opts.checkoutBranch = module.branch;
-    }
-
     var repo;
     var commit;
-    
-    return nodegit.Clone(appConfig.gitUrl + module.name + ".git", __dirname + '/..' + appConfig.clonePath + requestId + '/' + module.name, opts)
+    if(typeof module.branch != 'undefined' && module.branch !== null) {
+        opts.checkoutBranch = module.branch;
+        return nodegit.Clone(appConfig.gitUrl + module.name + ".git", __dirname + '/..' + appConfig.clonePath + requestId + '/' + module.name, opts)
+            .then(function(gitRepo) {
+                repo = gitRepo;
+                return repo.getBranch('remotes/origin/'+ module.branch);                    
+            })
+            .then(function(reference) {
+                return repo.checkoutRef(reference);
+            })
+            .catch(function(err) {
+                console.error(err.message);
+                throw err;
+            });
+    } else {
+        return nodegit.Clone(appConfig.gitUrl + module.name + ".git", __dirname + '/..' + appConfig.clonePath + requestId + '/' + module.name, opts)
             .then(function(gitRepo) {
                         repo = gitRepo;
                 console.log("Finished cloning %s", module.name);
@@ -42,9 +51,10 @@ var cloneAndCheckout = function(module, requestId) {
                 return nodegit.Reset.reset(repo, commit, nodegit.Reset.TYPE.HARD,{checkoutStrategy: nodegit.Checkout.SAFE}, module.branch);
             })
             .catch(function(err) {
-                console.error(err.message);
-                throw err;
+                 console.error(err.message);
+                 throw err;
             });
+    }    
 };
 
 module.exports = {
